@@ -53,7 +53,7 @@ class APIController {
         self.serverInteractionBy(parameters, parseFunction: self.defaultParseFunction())
     }
     
-    func serverInteractionBy(parameters: apiParameters, parseFunction: ((data: NSData, parameters: apiParameters) -> Void)?) {
+    func serverInteractionBy(parameters: apiParameters, parseFunction: ((data: NSData, parameters: apiParameters) -> Void)) {
         
         if let url = NSURL(string:parameters.urlString) {
             
@@ -70,11 +70,8 @@ class APIController {
                         self.failWith(parameters.failureNotification, closure:parameters.failureClosure, error: error)
                         
                     } else {
-                        if let parse = parseFunction {
-                            parse(data: data!, parameters: parameters)
-                        } else {
-                            self.defaultParseFunction()(data: data!, parameters: parameters)
-                        }
+                        
+                        parseFunction(data: data!, parameters: parameters)
                     }
                 }
             }
@@ -102,7 +99,8 @@ class APIController {
                     self.failWith(parameters.failureNotification, closure: parameters.failureClosure, error: NSError(domain: APIControllerErrors.domain, code: APIControllerErrors.BadJSONKey.rawValue, userInfo: [APIController.dictionaryKeys.reason : "Bad JSON path key: \(parameters.jsonKey)", APIController.dictionaryKeys.json : json]))
                     
                 } catch {
-                    self.failWith(parameters.failureNotification, closure: parameters.failureClosure, error: nil)
+                    
+                    self.failWith(parameters.failureNotification, closure: parameters.failureClosure, error:nil)
                 }
                 
             } else {
