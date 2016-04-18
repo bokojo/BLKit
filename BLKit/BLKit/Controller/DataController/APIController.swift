@@ -64,13 +64,11 @@ class APIController {
             let task = NSURLSession(configuration: NSURLSessionConfiguration.ephemeralSessionConfiguration()).dataTaskWithRequest(request) { (data, response, error) in
                 
                 dispatch_async(dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0)) {
-                    
+
                     if (error != nil || data == nil) {
-                        
                         self.failWith(parameters.failureNotification, closure:parameters.failureClosure, error: error)
                         
                     } else {
-                        
                         parseFunction(data: data!, parameters: parameters)
                     }
                 }
@@ -91,20 +89,16 @@ class APIController {
                 
                 do {
                     let objectArray = try self.processJSON(json, jsonKey: parameters.jsonKey, type: parameters.type)
-                    
                     self.succeedWith(parameters.successNotification, closure: parameters.successClosure, data: objectArray)
                     
                 } catch APIControllerErrors.BadJSONKey {
-                    
                     self.failWith(parameters.failureNotification, closure: parameters.failureClosure, error: NSError(domain: APIControllerErrors.domain, code: APIControllerErrors.BadJSONKey.rawValue, userInfo: [APIController.dictionaryKeys.reason : "Bad JSON path key: \(parameters.jsonKey)", APIController.dictionaryKeys.json : json]))
                     
                 } catch {
-                    
                     self.failWith(parameters.failureNotification, closure: parameters.failureClosure, error:nil)
                 }
                 
             } else {
-                
                 self.failWith(parameters.failureNotification, closure: parameters.failureClosure, error: nil)
             }
         }
