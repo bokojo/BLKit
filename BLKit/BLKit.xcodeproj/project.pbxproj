@@ -7,10 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		B4125C991CC553E20063F654 /* APIController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4125C971CC553E20063F654 /* APIController.swift */; };
+		B4125C9C1CC553EF0063F654 /* ExampleAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4125C9B1CC553EF0063F654 /* ExampleAPI.swift */; };
 		B439F92D1CC02DB3002F18F0 /* BLKit.h in Headers */ = {isa = PBXBuildFile; fileRef = B439F92C1CC02DB3002F18F0 /* BLKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B439F9341CC02DB3002F18F0 /* BLKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B439F9291CC02DB3002F18F0 /* BLKit.framework */; };
 		B439F9391CC02DB3002F18F0 /* BLKitTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B439F9381CC02DB3002F18F0 /* BLKitTests.swift */; };
-		B439F9481CC02E22002F18F0 /* APIController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B439F9441CC02E22002F18F0 /* APIController.swift */; };
 		B439F9491CC02E22002F18F0 /* APIObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = B439F9461CC02E22002F18F0 /* APIObject.swift */; };
 /* End PBXBuildFile section */
 
@@ -25,13 +26,14 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		B4125C971CC553E20063F654 /* APIController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = APIController.swift; sourceTree = "<group>"; };
+		B4125C9B1CC553EF0063F654 /* ExampleAPI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExampleAPI.swift; sourceTree = "<group>"; };
 		B439F9291CC02DB3002F18F0 /* BLKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = BLKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B439F92C1CC02DB3002F18F0 /* BLKit.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BLKit.h; sourceTree = "<group>"; };
 		B439F92E1CC02DB3002F18F0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		B439F9331CC02DB3002F18F0 /* BLKitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BLKitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		B439F9381CC02DB3002F18F0 /* BLKitTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BLKitTests.swift; sourceTree = "<group>"; };
 		B439F93A1CC02DB3002F18F0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		B439F9441CC02E22002F18F0 /* APIController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = APIController.swift; sourceTree = "<group>"; };
 		B439F9461CC02E22002F18F0 /* APIObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = APIObject.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -54,6 +56,29 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		B4125C961CC553E20063F654 /* DataController */ = {
+			isa = PBXGroup;
+			children = (
+				B4125C971CC553E20063F654 /* APIController.swift */,
+			);
+			path = DataController;
+			sourceTree = "<group>";
+		};
+		B4125C981CC553E20063F654 /* ViewController */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = ViewController;
+			sourceTree = "<group>";
+		};
+		B4125C9A1CC553EF0063F654 /* Examples */ = {
+			isa = PBXGroup;
+			children = (
+				B4125C9B1CC553EF0063F654 /* ExampleAPI.swift */,
+			);
+			path = Examples;
+			sourceTree = "<group>";
+		};
 		B439F91F1CC02DB3002F18F0 = {
 			isa = PBXGroup;
 			children = (
@@ -75,6 +100,7 @@
 		B439F92B1CC02DB3002F18F0 /* BLKit */ = {
 			isa = PBXGroup;
 			children = (
+				B4125C9A1CC553EF0063F654 /* Examples */,
 				B439F9431CC02E22002F18F0 /* Controller */,
 				B439F9451CC02E22002F18F0 /* Model */,
 				B439F9471CC02E22002F18F0 /* View */,
@@ -96,7 +122,8 @@
 		B439F9431CC02E22002F18F0 /* Controller */ = {
 			isa = PBXGroup;
 			children = (
-				B439F9441CC02E22002F18F0 /* APIController.swift */,
+				B4125C961CC553E20063F654 /* DataController */,
+				B4125C981CC553E20063F654 /* ViewController */,
 			);
 			path = Controller;
 			sourceTree = "<group>";
@@ -224,8 +251,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B439F9481CC02E22002F18F0 /* APIController.swift in Sources */,
+				B4125C991CC553E20063F654 /* APIController.swift in Sources */,
 				B439F9491CC02E22002F18F0 /* APIObject.swift in Sources */,
+				B4125C9C1CC553EF0063F654 /* ExampleAPI.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -410,6 +438,7 @@
 				B439F93F1CC02DB3002F18F0 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		B439F9401CC02DB3002F18F0 /* Build configuration list for PBXNativeTarget "BLKitTests" */ = {
 			isa = XCConfigurationList;
@@ -418,6 +447,7 @@
 				B439F9421CC02DB3002F18F0 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
