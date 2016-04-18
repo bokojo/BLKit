@@ -10,8 +10,8 @@ import UIKit
 
 class APIController {
     
-    var defaultCachePolicy = NSURLRequestCachePolicy.ReloadIgnoringCacheData
-    var defaultTimeoutInterval = 30.0
+    var defaultCachePolicy = NSURLRequestCachePolicy.ReloadRevalidatingCacheData
+    var defaultTimeoutInterval = 60.0
     var host = ""
     
     struct dictionaryKeys {
@@ -35,7 +35,23 @@ class APIController {
         static let domain = "APIController"
     }
     
-    struct apiParameters {
+    class apiParameters {
+        
+        init(urlString: String, successNotification: String? = nil, failureNotification: String? = nil, successClosure: (([AnyObject]) -> Void)? = nil, failureClosure: ((NSError?) -> Void)? = nil, type: APIObject.Type? = nil, jsonKey: String? = nil, httpVerb: HTTPVerb? = nil, inputObject: APIObject? = nil, cachePolicy: NSURLRequestCachePolicy? = nil, timeoutInterval: Double? = nil) {
+            
+            self.urlString = urlString
+            self.successNotification = successNotification
+            self.failureNotification = failureNotification
+            self.successClosure = successClosure
+            self.failureClosure = failureClosure
+            self.type = type
+            self.jsonKey = jsonKey
+            self.httpVerb = httpVerb
+            self.inputObject = inputObject
+            self.cachePolicy = cachePolicy
+            self.timeoutInterval = timeoutInterval
+        }
+        
         let urlString: String
         let successNotification: String?
         let failureNotification: String?

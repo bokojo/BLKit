@@ -8,7 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		B4125C991CC553E20063F654 /* APIController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4125C971CC553E20063F654 /* APIController.swift */; };
-		B4125C9C1CC553EF0063F654 /* ExampleAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4125C9B1CC553EF0063F654 /* ExampleAPI.swift */; };
+		B4125C9C1CC553EF0063F654 /* ThingAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4125C9B1CC553EF0063F654 /* ThingAPI.swift */; };
+		B4125CA01CC56B110063F654 /* DataController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4125C9F1CC56B110063F654 /* DataController.swift */; };
 		B439F92D1CC02DB3002F18F0 /* BLKit.h in Headers */ = {isa = PBXBuildFile; fileRef = B439F92C1CC02DB3002F18F0 /* BLKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B439F9341CC02DB3002F18F0 /* BLKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B439F9291CC02DB3002F18F0 /* BLKit.framework */; };
 		B439F9391CC02DB3002F18F0 /* BLKitTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B439F9381CC02DB3002F18F0 /* BLKitTests.swift */; };
@@ -27,7 +28,8 @@
 
 /* Begin PBXFileReference section */
 		B4125C971CC553E20063F654 /* APIController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = APIController.swift; sourceTree = "<group>"; };
-		B4125C9B1CC553EF0063F654 /* ExampleAPI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExampleAPI.swift; sourceTree = "<group>"; };
+		B4125C9B1CC553EF0063F654 /* ThingAPI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ThingAPI.swift; sourceTree = "<group>"; };
+		B4125C9F1CC56B110063F654 /* DataController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataController.swift; sourceTree = "<group>"; };
 		B439F9291CC02DB3002F18F0 /* BLKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = BLKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B439F92C1CC02DB3002F18F0 /* BLKit.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BLKit.h; sourceTree = "<group>"; };
 		B439F92E1CC02DB3002F18F0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -60,6 +62,7 @@
 			isa = PBXGroup;
 			children = (
 				B4125C971CC553E20063F654 /* APIController.swift */,
+				B4125C9F1CC56B110063F654 /* DataController.swift */,
 			);
 			path = DataController;
 			sourceTree = "<group>";
@@ -74,7 +77,7 @@
 		B4125C9A1CC553EF0063F654 /* Examples */ = {
 			isa = PBXGroup;
 			children = (
-				B4125C9B1CC553EF0063F654 /* ExampleAPI.swift */,
+				B4125C9B1CC553EF0063F654 /* ThingAPI.swift */,
 			);
 			path = Examples;
 			sourceTree = "<group>";
@@ -252,8 +255,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				B4125C991CC553E20063F654 /* APIController.swift in Sources */,
+				B4125CA01CC56B110063F654 /* DataController.swift in Sources */,
 				B439F9491CC02E22002F18F0 /* APIObject.swift in Sources */,
-				B4125C9C1CC553EF0063F654 /* ExampleAPI.swift in Sources */,
+				B4125C9C1CC553EF0063F654 /* ThingAPI.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

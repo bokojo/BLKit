@@ -1,5 +1,5 @@
 //
-//  ExampleAPI.swift
+//  ThingAPI.swift
 //  BLKit
 //
 //  Created by Burton Lee on 4/18/16.
@@ -15,7 +15,7 @@ class Thing: APIObject {
     }
 }
 
-class ExampleAPI : APIController {
+class ThingAPI : APIController {
     
     override init() {
         super.init()
@@ -31,17 +31,10 @@ class ExampleAPI : APIController {
         let parameters = apiParameters(
             
             urlString: "/thing/\(thingID)",
-            successNotification: nil,
-            failureNotification: nil,
             successClosure: success,
             failureClosure: failure,
             type: Thing.self,
-            jsonKey: "data.toomuchdata.things",
-            httpVerb: .GET,
-            inputObject: nil,
-            cachePolicy: nil,
-            timeoutInterval: nil
-        
+            jsonKey: "data.toomuchdata.things"
         )
         
         serverInterationBy(parameters)
@@ -50,7 +43,7 @@ class ExampleAPI : APIController {
 
 class ExampleViewController : UIViewController {
     
-    let apiController = ExampleAPI()
+    let apiController = ThingAPI()
     var data = [Thing]()
     
     override func viewDidLoad() {
