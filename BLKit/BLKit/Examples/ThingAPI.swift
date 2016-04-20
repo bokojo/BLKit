@@ -8,19 +8,32 @@
 
 import UIKit
 
+// MARK: - Model -
+
 class Thing: APIObject {
     
+    let name: String
+    let thingID: Int
+    
+    init(name: String, thingID: Int) {
+        self.name = name
+        self.thingID = thingID
+    }
+    
     required convenience init?(dictionary: NSDictionary) {
-        self.init()
+        guard let name = dictionary["name"] as? String else { return nil }
+        guard let thingID = dictionary["id"] as? Int else { return nil }
+        
+        self.init(name: name, thingID: thingID)
     }
 }
 
+// MARK: - Controller -
+
 class ThingAPI : APIController {
     
-    override init() {
-        super.init()
-        
-        host = "http://thingserver.notaserver.com"
+    init() {
+        super.init(host:"http://thingserver.notaserver.com")
     }
     
     // MARK: - API DEFINITIONS -
@@ -37,9 +50,12 @@ class ThingAPI : APIController {
             jsonKey: "data.toomuchdata.things"
         )
         
+        // cache behavior
         serverInterationBy(parameters)
     }
 }
+
+// MARK: - View Controller -
 
 class ExampleViewController : UIViewController {
     

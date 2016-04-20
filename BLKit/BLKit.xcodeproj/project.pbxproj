@@ -10,6 +10,7 @@
 		B4125C991CC553E20063F654 /* APIController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4125C971CC553E20063F654 /* APIController.swift */; };
 		B4125C9C1CC553EF0063F654 /* ThingAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4125C9B1CC553EF0063F654 /* ThingAPI.swift */; };
 		B4125CA01CC56B110063F654 /* DataController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4125C9F1CC56B110063F654 /* DataController.swift */; };
+		B4125CD61CC6B6C90063F654 /* Reachability.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4125CD51CC6B6C90063F654 /* Reachability.swift */; };
 		B439F92D1CC02DB3002F18F0 /* BLKit.h in Headers */ = {isa = PBXBuildFile; fileRef = B439F92C1CC02DB3002F18F0 /* BLKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B439F9341CC02DB3002F18F0 /* BLKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B439F9291CC02DB3002F18F0 /* BLKit.framework */; };
 		B439F9391CC02DB3002F18F0 /* BLKitTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B439F9381CC02DB3002F18F0 /* BLKitTests.swift */; };
@@ -30,6 +31,7 @@
 		B4125C971CC553E20063F654 /* APIController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = APIController.swift; sourceTree = "<group>"; };
 		B4125C9B1CC553EF0063F654 /* ThingAPI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ThingAPI.swift; sourceTree = "<group>"; };
 		B4125C9F1CC56B110063F654 /* DataController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataController.swift; sourceTree = "<group>"; };
+		B4125CD51CC6B6C90063F654 /* Reachability.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Reachability.swift; sourceTree = "<group>"; };
 		B439F9291CC02DB3002F18F0 /* BLKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = BLKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B439F92C1CC02DB3002F18F0 /* BLKit.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BLKit.h; sourceTree = "<group>"; };
 		B439F92E1CC02DB3002F18F0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -82,6 +84,23 @@
 			path = Examples;
 			sourceTree = "<group>";
 		};
+		B4125CA11CC6A8930063F654 /* ThirdParty */ = {
+			isa = PBXGroup;
+			children = (
+				B4125CD41CC6B6C90063F654 /* AshleyMills */,
+			);
+			name = ThirdParty;
+			path = ../../ThirdParty;
+			sourceTree = "<group>";
+		};
+		B4125CD41CC6B6C90063F654 /* AshleyMills */ = {
+			isa = PBXGroup;
+			children = (
+				B4125CD51CC6B6C90063F654 /* Reachability.swift */,
+			);
+			path = AshleyMills;
+			sourceTree = "<group>";
+		};
 		B439F91F1CC02DB3002F18F0 = {
 			isa = PBXGroup;
 			children = (
@@ -103,6 +122,7 @@
 		B439F92B1CC02DB3002F18F0 /* BLKit */ = {
 			isa = PBXGroup;
 			children = (
+				B4125CA11CC6A8930063F654 /* ThirdParty */,
 				B4125C9A1CC553EF0063F654 /* Examples */,
 				B439F9431CC02E22002F18F0 /* Controller */,
 				B439F9451CC02E22002F18F0 /* Model */,
@@ -220,6 +240,7 @@
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
+				Base,
 			);
 			mainGroup = B439F91F1CC02DB3002F18F0;
 			productRefGroup = B439F92A1CC02DB3002F18F0 /* Products */;
@@ -257,6 +278,7 @@
 				B4125C991CC553E20063F654 /* APIController.swift in Sources */,
 				B4125CA01CC56B110063F654 /* DataController.swift in Sources */,
 				B439F9491CC02E22002F18F0 /* APIObject.swift in Sources */,
+				B4125CD61CC6B6C90063F654 /* Reachability.swift in Sources */,
 				B4125C9C1CC553EF0063F654 /* ThingAPI.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -384,6 +406,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.buffaloladybug.BLKit;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "";
 			};
 			name = Debug;
 		};
@@ -400,6 +423,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.buffaloladybug.BLKit;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "";
 			};
 			name = Release;
 		};

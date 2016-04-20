@@ -6,13 +6,20 @@
 //  Copyright © 2016 Buffalo Ladybug LLC. All rights reserved.
 //
 
-import UIKit
+import Foundation
 
 class APIController {
     
-    var defaultCachePolicy = NSURLRequestCachePolicy.ReloadRevalidatingCacheData
+    var defaultCachePolicy = NSURLRequestCachePolicy.UseProtocolCachePolicy
     var defaultTimeoutInterval = 60.0
-    var host = ""
+    let host: String;
+    var reachability: Reachability?;
+    
+    init(host: String) {
+        
+        self.host = host;
+        self.reachability = try? Reachability(hostname: self.host)
+    }
     
     struct dictionaryKeys {
         static let data = "data"
@@ -31,7 +38,8 @@ class APIController {
     }
     
     enum APIControllerErrors: Int, ErrorType {
-        case BadJSONKey = 0
+        case BadJSONKey = 101
+        case UnreachableServer
         static let domain = "APIController"
     }
     
@@ -77,10 +85,10 @@ class APIController {
             
             request.HTTPMethod = parameters.httpVerb?.rawValue ?? HTTPVerb.GET.rawValue
             
-            let task = NSURLSession(configuration: NSURLSessionConfiguration.ephemeralSessionConfiguration()).dataTaskWithRequest(request) { (data, response, error) in
+            let completionBlock: (data: NSData?, response: NSURLResponse?, error: NSError?) -> Void = { (data, response, error) in
                 
                 dispatch_async(dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0)) {
-
+                    
                     if (error != nil || data == nil) {
                         self.failWith(parameters.failureNotification, closure:parameters.failureClosure, error: error)
                         
@@ -90,10 +98,24 @@ class APIController {
                 }
             }
             
-            task.resume()
+            let task = NSURLSession(configuration: NSURLSessionConfiguration.ephemeralSessionConfiguration()).dataTaskWithRequest(request, completionHandler: completionBlock)
+            
+           
+            if !(self.reachability != nil && self.reachability!.isReachable()) {
+                
+                if let cachedResponse = NSURLCache.sharedURLCache().cachedResponseForRequest(request) {
+                    completionBlock(data: cachedResponse.data, response: cachedResponse.response, error: nil)
+               
+                } else {
+                    self.failWith(parameters.failureNotification, closure: parameters.failureClosure, error: NSError(domain: APIControllerErrors.domain, code: APIControllerErrors.UnreachableServer.rawValue, userInfo: [APIController.dictionaryKeys.reason : "Unreachable Host: \(self.host)"]))
+                }
+                
+            } else {
+                    task.resume()
+            }
+                
             
         } else {
-            
             assertionFailure("BAD URL: \(parameters.urlString)")
         }
     }
@@ -126,12 +148,12 @@ class APIController {
         var interior = json;
         
         if jsonKey != nil {
-            
             let keysArray = jsonKey!.componentsSeparatedByString(".")
             
             for key in keysArray {
                 if let d = interior[key] {
                     interior = d!;
+                    
                 } else {
                     throw APIControllerErrors.BadJSONKey
                 }
