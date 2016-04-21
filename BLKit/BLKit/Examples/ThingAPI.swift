@@ -45,7 +45,7 @@ class ThingAPI : APIController {
         
         let parameters = APIParameters(
             
-            urlString: "/thing/\(thingID)",
+            urlString: "\(host)/thing/\(thingID)",
             successClosure: success,
             failureClosure: failure,
             type: Thing.self,

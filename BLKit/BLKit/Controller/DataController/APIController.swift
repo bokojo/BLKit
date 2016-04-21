@@ -12,7 +12,18 @@ class APIController {
     
     class APIParameters {
         
-        init(urlString: String, successNotification: String? = nil, failureNotification: String? = nil, successClosure: (([AnyObject]) -> Void)? = nil, failureClosure: ((NSError?) -> Void)? = nil, type: APIObject.Type? = nil, jsonKey: String? = nil, httpVerb: HTTPVerb? = nil, inputObject: APIObject? = nil, cachePolicy: NSURLRequestCachePolicy? = nil, timeoutInterval: Double? = nil, queueOnFailure: Bool = false) {
+        init(urlString: String,
+             successNotification: String? = nil,
+             failureNotification: String? = nil,
+             successClosure: (([AnyObject]) -> Void)? = nil,
+             failureClosure: ((NSError?) -> Void)? = nil,
+             type: APIObject.Type? = nil,
+             jsonKey: String? = nil,
+             httpVerb: HTTPVerb? = nil,
+             inputObject: APIObject? = nil,
+             cachePolicy: NSURLRequestCachePolicy? = nil,
+             timeoutInterval: Double? = nil,
+             queueOnFailure: Bool = false) {
             
             self.urlString = urlString
             self.successNotification = successNotification
@@ -107,11 +118,14 @@ class APIController {
         self.serverInteractionBy(parameters, parseFunction: self.defaultParseFunction())
     }
     
-    func serverInteractionBy(parameters: APIParameters, parseFunction: ((data: NSData, parameters: APIParameters) throws -> Void)) {
+    func serverInteractionBy(parameters: APIParameters, parseFunction: ((data: NSData, parameters: APIParameters)
+        throws -> Void)) {
         
         if let url = NSURL(string:parameters.urlString) {
             
-            let request = NSMutableURLRequest(URL: url, cachePolicy: parameters.cachePolicy ?? self.defaultCachePolicy, timeoutInterval: parameters.timeoutInterval ?? self.defaultTimeoutInterval)
+            let request = NSMutableURLRequest(URL: url, cachePolicy: parameters.cachePolicy ?? self.defaultCachePolicy,
+                                timeoutInterval: parameters.timeoutInterval ?? self.defaultTimeoutInterval)
+            
             request.HTTPMethod = parameters.httpVerb?.rawValue ?? HTTPVerb.GET.rawValue
             
             let completionBlock: (data: NSData?, response: NSURLResponse?, error: NSError?) -> Void = { (data, response, error) in
@@ -164,47 +178,40 @@ class APIController {
         return { (data, parameters) in
             
             let json = try NSJSONSerialization.JSONObjectWithData(data, options:NSJSONReadingOptions())
-            let objectArray = try self.processJSON(json, jsonKey: parameters.jsonKey, type: parameters.type)
-            self.succeedWith(parameters.successNotification, closure: parameters.successClosure, data: objectArray)
+            var objectArray = [AnyObject]()
+            var interior = json
             
-        }
-    }
-    
-    private func processJSON(json: AnyObject, jsonKey: String?, type: APIObject.Type?) throws -> [AnyObject] {
-        
-        var objectArray = [AnyObject]()
-        var interior = json;
-        
-        if jsonKey != nil {
-            let keysArray = jsonKey!.componentsSeparatedByString(".")
-            
-            for key in keysArray {
-                if let d = interior[key] {
-                    interior = d!;
-                    
-                } else {
-                    throw APIControllerErrors.BadJSONKey
+            if parameters.jsonKey != nil {
+                let keysArray = parameters.jsonKey!.componentsSeparatedByString(".")
+                
+                for key in keysArray {
+                    if let d = interior[key] {
+                        interior = d!;
+                        
+                    } else {
+                        throw APIControllerErrors.BadJSONKey
+                    }
                 }
             }
-        }
-        
-        if interior is NSDictionary {
-            interior = [interior]
-        }
-        
-        let rawArray = interior as! [NSDictionary]
-        
-        guard type != nil else {
-            return rawArray
-        }
-        
-        for dictionary: NSDictionary in rawArray {
-            if let object = type!.init(dictionary: dictionary) {
-                objectArray.append(object)
+            
+            if interior is NSDictionary {
+                interior = [interior]
             }
+            
+            let rawArray = interior as! [NSDictionary]
+            
+            if parameters.type != nil {
+                for dictionary: NSDictionary in rawArray {
+                    if let object = parameters.type!.init(dictionary: dictionary) {
+                        objectArray.append(object)
+                    }
+                }
+            } else {
+                objectArray = rawArray
+            }
+            
+            self.succeedWith(parameters.successNotification, closure: parameters.successClosure, data: objectArray)
         }
-        
-        return objectArray
     }
     
     private func failWith(notification: String?, closure: ((NSError?) -> Void)?, error: NSError?) {
