@@ -10,15 +10,74 @@ import Foundation
 
 class APIController {
     
+    class APIParameters {
+        
+        init(urlString: String, successNotification: String? = nil, failureNotification: String? = nil, successClosure: (([AnyObject]) -> Void)? = nil, failureClosure: ((NSError?) -> Void)? = nil, type: APIObject.Type? = nil, jsonKey: String? = nil, httpVerb: HTTPVerb? = nil, inputObject: APIObject? = nil, cachePolicy: NSURLRequestCachePolicy? = nil, timeoutInterval: Double? = nil, queueOnFailure: Bool = false) {
+            
+            self.urlString = urlString
+            self.successNotification = successNotification
+            self.failureNotification = failureNotification
+            self.successClosure = successClosure
+            self.failureClosure = failureClosure
+            self.type = type
+            self.jsonKey = jsonKey
+            self.httpVerb = httpVerb
+            self.inputObject = inputObject
+            self.cachePolicy = cachePolicy
+            self.timeoutInterval = timeoutInterval
+            self.queueOnFailure = queueOnFailure
+        }
+        
+        let urlString: String
+        let successNotification: String?
+        let failureNotification: String?
+        let successClosure: (([AnyObject]) -> Void)?
+        let failureClosure: ((NSError?) -> Void)?
+        let type: APIObject.Type?
+        let jsonKey: String?
+        let httpVerb: HTTPVerb?
+        let inputObject: APIObject?
+        let cachePolicy: NSURLRequestCachePolicy?
+        let timeoutInterval: Double?
+        let queueOnFailure: Bool
+    }
+    
     var defaultCachePolicy = NSURLRequestCachePolicy.UseProtocolCachePolicy
     var defaultTimeoutInterval = 60.0
+    
     let host: String;
     var reachability: Reachability?;
+    var commandQueue = [NSURLSessionTask]()
+    let urlSession = NSURLSession(configuration: NSURLSessionConfiguration.ephemeralSessionConfiguration())
     
     init(host: String) {
         
         self.host = host;
         self.reachability = try? Reachability(hostname: self.host)
+        
+        if (self.reachability != nil) {
+            self.reachability!.whenReachable = { (reachability) in
+                
+                if self.commandQueue.count > 0 {
+                    var newQueue = [NSURLSessionTask]()
+                    
+                    for task in self.commandQueue {
+                        if (reachability.isReachable()) {
+                            task.resume()
+                        } else {
+                            newQueue.append(task)
+                        }
+                    }
+                    
+                    self.commandQueue = newQueue;
+                }
+            }
+        }
+    }
+    
+    deinit {
+        self.reachability = nil
+        self.urlSession.invalidateAndCancel()
     }
     
     struct dictionaryKeys {
@@ -43,46 +102,16 @@ class APIController {
         static let domain = "APIController"
     }
     
-    class apiParameters {
-        
-        init(urlString: String, successNotification: String? = nil, failureNotification: String? = nil, successClosure: (([AnyObject]) -> Void)? = nil, failureClosure: ((NSError?) -> Void)? = nil, type: APIObject.Type? = nil, jsonKey: String? = nil, httpVerb: HTTPVerb? = nil, inputObject: APIObject? = nil, cachePolicy: NSURLRequestCachePolicy? = nil, timeoutInterval: Double? = nil) {
-            
-            self.urlString = urlString
-            self.successNotification = successNotification
-            self.failureNotification = failureNotification
-            self.successClosure = successClosure
-            self.failureClosure = failureClosure
-            self.type = type
-            self.jsonKey = jsonKey
-            self.httpVerb = httpVerb
-            self.inputObject = inputObject
-            self.cachePolicy = cachePolicy
-            self.timeoutInterval = timeoutInterval
-        }
-        
-        let urlString: String
-        let successNotification: String?
-        let failureNotification: String?
-        let successClosure: (([AnyObject]) -> Void)?
-        let failureClosure: ((NSError?) -> Void)?
-        let type: APIObject.Type?
-        let jsonKey: String?
-        let httpVerb: HTTPVerb?
-        let inputObject: APIObject?
-        let cachePolicy: NSURLRequestCachePolicy?
-        let timeoutInterval: Double?
-    }
     
-    func serverInterationBy(parameters: apiParameters) {
+    func serverInterationBy(parameters: APIParameters) {
         self.serverInteractionBy(parameters, parseFunction: self.defaultParseFunction())
     }
     
-    func serverInteractionBy(parameters: apiParameters, parseFunction: ((data: NSData, parameters: apiParameters) -> Void)) {
+    func serverInteractionBy(parameters: APIParameters, parseFunction: ((data: NSData, parameters: APIParameters) throws -> Void)) {
         
         if let url = NSURL(string:parameters.urlString) {
             
             let request = NSMutableURLRequest(URL: url, cachePolicy: parameters.cachePolicy ?? self.defaultCachePolicy, timeoutInterval: parameters.timeoutInterval ?? self.defaultTimeoutInterval)
-            
             request.HTTPMethod = parameters.httpVerb?.rawValue ?? HTTPVerb.GET.rawValue
             
             let completionBlock: (data: NSData?, response: NSURLResponse?, error: NSError?) -> Void = { (data, response, error) in
@@ -93,14 +122,21 @@ class APIController {
                         self.failWith(parameters.failureNotification, closure:parameters.failureClosure, error: error)
                         
                     } else {
-                        parseFunction(data: data!, parameters: parameters)
+                        do {
+                            try parseFunction(data: data!, parameters: parameters)
+                            
+                        } catch APIControllerErrors.BadJSONKey {
+                            self.failWith(parameters.failureNotification, closure: parameters.failureClosure, error: NSError(domain: APIControllerErrors.domain, code: APIControllerErrors.BadJSONKey.rawValue, userInfo: [APIController.dictionaryKeys.reason : "Bad JSON path key: \(parameters.jsonKey)", APIController.dictionaryKeys.json : parameters.jsonKey!]))
+                            
+                        } catch {
+                            self.failWith(parameters.failureNotification, closure: parameters.failureClosure, error:nil)
+                        }
                     }
                 }
             }
             
-            let task = NSURLSession(configuration: NSURLSessionConfiguration.ephemeralSessionConfiguration()).dataTaskWithRequest(request, completionHandler: completionBlock)
+            let task = self.urlSession.dataTaskWithRequest(request, completionHandler: completionBlock)
             
-           
             if !(self.reachability != nil && self.reachability!.isReachable()) {
                 
                 if let cachedResponse = NSURLCache.sharedURLCache().cachedResponseForRequest(request) {
@@ -108,6 +144,10 @@ class APIController {
                
                 } else {
                     self.failWith(parameters.failureNotification, closure: parameters.failureClosure, error: NSError(domain: APIControllerErrors.domain, code: APIControllerErrors.UnreachableServer.rawValue, userInfo: [APIController.dictionaryKeys.reason : "Unreachable Host: \(self.host)"]))
+                }
+                
+                if parameters.queueOnFailure {
+                    self.commandQueue.append(task)
                 }
                 
             } else {
@@ -120,25 +160,13 @@ class APIController {
         }
     }
     
-    func defaultParseFunction() -> (data: NSData, parameters: apiParameters) -> Void {
+    func defaultParseFunction() -> (data: NSData, parameters: APIParameters) throws -> Void {
         return { (data, parameters) in
             
-            if let json = try? NSJSONSerialization.JSONObjectWithData(data, options:NSJSONReadingOptions()) {
-                
-                do {
-                    let objectArray = try self.processJSON(json, jsonKey: parameters.jsonKey, type: parameters.type)
-                    self.succeedWith(parameters.successNotification, closure: parameters.successClosure, data: objectArray)
-                    
-                } catch APIControllerErrors.BadJSONKey {
-                    self.failWith(parameters.failureNotification, closure: parameters.failureClosure, error: NSError(domain: APIControllerErrors.domain, code: APIControllerErrors.BadJSONKey.rawValue, userInfo: [APIController.dictionaryKeys.reason : "Bad JSON path key: \(parameters.jsonKey)", APIController.dictionaryKeys.json : json]))
-                    
-                } catch {
-                    self.failWith(parameters.failureNotification, closure: parameters.failureClosure, error:nil)
-                }
-                
-            } else {
-                self.failWith(parameters.failureNotification, closure: parameters.failureClosure, error: nil)
-            }
+            let json = try NSJSONSerialization.JSONObjectWithData(data, options:NSJSONReadingOptions())
+            let objectArray = try self.processJSON(json, jsonKey: parameters.jsonKey, type: parameters.type)
+            self.succeedWith(parameters.successNotification, closure: parameters.successClosure, data: objectArray)
+            
         }
     }
     

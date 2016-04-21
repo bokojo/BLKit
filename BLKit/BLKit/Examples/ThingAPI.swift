@@ -21,8 +21,10 @@ class Thing: APIObject {
     }
     
     required convenience init?(dictionary: NSDictionary) {
-        guard let name = dictionary["name"] as? String else { return nil }
-        guard let thingID = dictionary["id"] as? Int else { return nil }
+        guard
+            let name = dictionary["name"] as? String,
+            let thingID = dictionary["id"] as? Int
+        else { return nil }
         
         self.init(name: name, thingID: thingID)
     }
@@ -41,7 +43,7 @@ class ThingAPI : APIController {
     
     func getThingFromServer(thingID: Int, success: (([AnyObject]) -> Void), failure: ((NSError?) -> Void)?) {
         
-        let parameters = apiParameters(
+        let parameters = APIParameters(
             
             urlString: "/thing/\(thingID)",
             successClosure: success,
@@ -50,7 +52,6 @@ class ThingAPI : APIController {
             jsonKey: "data.toomuchdata.things"
         )
         
-        // cache behavior
         serverInterationBy(parameters)
     }
 }
