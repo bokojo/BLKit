@@ -67,22 +67,7 @@ class APIController {
         self.reachability = try? Reachability(hostname: self.host)
         
         if (self.reachability != nil) {
-            self.reachability!.whenReachable = { (reachability) in
-                
-                if self.commandQueue.count > 0 {
-                    var newQueue = [NSURLSessionTask]()
-                    
-                    for task in self.commandQueue {
-                        if (reachability.isReachable()) {
-                            task.resume()
-                        } else {
-                            newQueue.append(task)
-                        }
-                    }
-                    
-                    self.commandQueue = newQueue;
-                }
-            }
+            self.reachability!.whenReachable = { (_) in self.processQueue() }
         }
     }
     
@@ -122,16 +107,13 @@ class APIController {
         throws -> Void)) {
         
         if let url = NSURL(string:parameters.urlString) {
-            
             let request = NSMutableURLRequest(URL: url, cachePolicy: parameters.cachePolicy ?? self.defaultCachePolicy,
                                 timeoutInterval: parameters.timeoutInterval ?? self.defaultTimeoutInterval)
-            
             request.HTTPMethod = parameters.httpVerb?.rawValue ?? HTTPVerb.GET.rawValue
             
             let completionBlock: (data: NSData?, response: NSURLResponse?, error: NSError?) -> Void = { (data, response, error) in
                 
                 dispatch_async(dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0)) {
-                    
                     if (error != nil || data == nil) {
                         self.failWith(parameters.failureNotification, closure:parameters.failureClosure, error: error)
                         
@@ -152,7 +134,6 @@ class APIController {
             let task = self.urlSession.dataTaskWithRequest(request, completionHandler: completionBlock)
             
             if !(self.reachability != nil && self.reachability!.isReachable()) {
-                
                 if let cachedResponse = NSURLCache.sharedURLCache().cachedResponseForRequest(request) {
                     completionBlock(data: cachedResponse.data, response: cachedResponse.response, error: nil)
                
@@ -167,7 +148,6 @@ class APIController {
             } else {
                     task.resume()
             }
-                
             
         } else {
             assertionFailure("BAD URL: \(parameters.urlString)")
@@ -251,6 +231,24 @@ class APIController {
             }
         }
     }
+    
+    private func processQueue()  {
+        
+        if self.commandQueue.count > 0 {
+            var newQueue = [NSURLSessionTask]()
+            
+            for task in self.commandQueue {
+                if (self.reachability != nil && self.reachability!.isReachable()) {
+                    task.resume()
+                } else {
+                    newQueue.append(task)
+                }
+            }
+            
+            self.commandQueue = newQueue;
+        }
+    }
+
 }
 
 extension NSNotification {
