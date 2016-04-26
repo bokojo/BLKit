@@ -67,7 +67,7 @@ class APIController {
         self.reachability = try? Reachability(hostname: self.host)
         
         if (self.reachability != nil) {
-            self.reachability!.whenReachable = { (_) in self.processQueue() }
+            self.reachability!.whenReachable = self.processQueue()
         }
     }
     
@@ -97,8 +97,7 @@ class APIController {
         case UnreachableServer
         static let domain = "APIController"
     }
-    
-    
+        
     func serverInterationBy(parameters: APIParameters) {
         self.serverInteractionBy(parameters, parseFunction: self.defaultParseFunction())
     }
@@ -232,23 +231,25 @@ class APIController {
         }
     }
     
-    private func processQueue()  {
+    private func processQueue() -> (reachability: Reachability) -> Void  {
         
-        if self.commandQueue.count > 0 {
-            var newQueue = [NSURLSessionTask]()
-            
-            for task in self.commandQueue {
-                if (self.reachability != nil && self.reachability!.isReachable()) {
-                    task.resume()
-                } else {
-                    newQueue.append(task)
+        return { (reachability) in
+            if self.commandQueue.count > 0 {
+                var newQueue = [NSURLSessionTask]()
+                
+                for task in self.commandQueue {
+                    if (reachability.isReachable()) {
+                        task.resume()
+                    } else {
+                        newQueue.append(task)
+                    }
                 }
+                
+                self.commandQueue = newQueue;
             }
-            
-            self.commandQueue = newQueue;
         }
     }
-
+    
 }
 
 extension NSNotification {
