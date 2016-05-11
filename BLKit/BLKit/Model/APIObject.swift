@@ -8,7 +8,7 @@
 
 import Foundation
 
-protocol APIObject : AnyObject {
+public protocol APIObject : AnyObject {
     
     init?(dictionary: NSDictionary)
 }

@@ -8,11 +8,11 @@
 
 import Foundation
 
-class APIController {
+public class APIController {
     
-    class APIParameters {
+    public class APIParameters {
         
-        init(urlString: String,
+        public init(urlString: String,
              successNotification: String? = nil,
              failureNotification: String? = nil,
              successClosure: (([AnyObject]) -> Void)? = nil,
@@ -53,15 +53,16 @@ class APIController {
         let queueOnFailure: Bool
     }
     
-    var defaultCachePolicy = NSURLRequestCachePolicy.UseProtocolCachePolicy
-    var defaultTimeoutInterval = 60.0
+    public var defaultCachePolicy = NSURLRequestCachePolicy.UseProtocolCachePolicy
+    public var defaultTimeoutInterval = 60.0
     
-    let host: String;
-    var reachability: Reachability?;
-    var commandQueue = [NSURLSessionTask]()
-    let urlSession = NSURLSession(configuration: NSURLSessionConfiguration.ephemeralSessionConfiguration())
+    public let host: String;
+    public var reachability: Reachability?;
     
-    init(host: String) {
+    public var commandQueue = [NSURLSessionTask]()
+    public let urlSession = NSURLSession(configuration: NSURLSessionConfiguration.ephemeralSessionConfiguration())
+    
+    public init(host: String) {
         
         self.host = host;
         self.reachability = try? Reachability(hostname: self.host)
@@ -76,7 +77,7 @@ class APIController {
         self.urlSession.invalidateAndCancel()
     }
     
-    struct dictionaryKeys {
+    public struct dictionaryKeys {
         static let data = "data"
         static let error = "error"
         static let json = "json"
@@ -84,7 +85,7 @@ class APIController {
         static let reason = "reason"
     }
     
-    enum HTTPVerb: String {
+    public enum HTTPVerb: String {
         case GET = "GET"
         case POST = "POST"
         case PUT = "PUT"
@@ -92,17 +93,17 @@ class APIController {
         case DELETE = "DELETE"
     }
     
-    enum APIControllerErrors: Int, ErrorType {
+    public enum APIControllerErrors: Int, ErrorType {
         case BadJSONKey = 101
         case UnreachableServer
         static let domain = "APIController"
     }
         
-    func serverInterationBy(parameters: APIParameters) {
+    public func serverInterationBy(parameters: APIParameters) {
         self.serverInteractionBy(parameters, parseFunction: self.defaultParseFunction())
     }
     
-    func serverInteractionBy(parameters: APIParameters, parseFunction: ((data: NSData, parameters: APIParameters)
+    public func serverInteractionBy(parameters: APIParameters, parseFunction: ((data: NSData, parameters: APIParameters)
         throws -> Void)) {
         
         if let url = NSURL(string:parameters.urlString) {
@@ -153,7 +154,7 @@ class APIController {
         }
     }
     
-    func defaultParseFunction() -> (data: NSData, parameters: APIParameters) throws -> Void {
+    public func defaultParseFunction() -> (data: NSData, parameters: APIParameters) throws -> Void {
         return { (data, parameters) in
             
             let json = try NSJSONSerialization.JSONObjectWithData(data, options:NSJSONReadingOptions())
@@ -254,7 +255,7 @@ class APIController {
 
 extension NSNotification {
     
-    func objectData() -> [AnyObject] {
+    public func objectData() -> [AnyObject] {
         
         if (self.userInfo == nil) {
             return [AnyObject]()
@@ -263,7 +264,7 @@ extension NSNotification {
         return self.userInfo![APIController.dictionaryKeys.data] as! Array
     }
     
-    func errorData() -> NSError? {
+    public func errorData() -> NSError? {
         
         return self.userInfo?[APIController.dictionaryKeys.error] as? NSError
     }
