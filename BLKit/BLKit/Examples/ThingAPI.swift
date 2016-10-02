@@ -41,7 +41,7 @@ class ThingAPI : APIController {
     // MARK: - API DEFINITIONS -
     // MARK: GET - /thing/[id]
     
-    func getThingFromServer(thingID: Int, success: (([AnyObject]) -> Void), failure: ((NSError?) -> Void)?) {
+    func getThingFromServer(thingID: Int, success: @escaping (([AnyObject]) -> Void), failure: ((Error?) -> Void)?) {
         
         let parameters = APIParameters(
             
@@ -52,7 +52,7 @@ class ThingAPI : APIController {
             jsonKey: "data.toomuchdata.things"
         )
         
-        serverInterationBy(parameters)
+        serverInterationBy(parameters: parameters)
     }
 }
 
@@ -72,7 +72,7 @@ class ExampleViewController : UIViewController {
             // perform view update with fresh data
         }
         
-        apiController.getThingFromServer(0, success: success, failure: nil)
+        apiController.getThingFromServer(thingID: 0, success: success, failure: nil)
     }
     
 }
