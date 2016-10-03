@@ -10,7 +10,7 @@ import Foundation
 
 open class APIController {
     
-    open class APIParameters {
+    public class APIParameters {
         
         public init(urlString: String,
              successNotification: Notification.Name? = nil,
@@ -194,7 +194,7 @@ open class APIController {
         }
     }
     
-    private func failWith(notification: Notification.Name?, closure: ((Error?) -> Void)?, error: Error?) {
+    fileprivate func failWith(notification: Notification.Name?, closure: ((Error?) -> Void)?, error: Error?) {
         
         if (notification == nil && closure == nil) {
             return;
@@ -217,7 +217,7 @@ open class APIController {
         }
     }
     
-    private func succeedWith(notification: Notification.Name?, closure: (([AnyObject]) -> Void)?, data: [AnyObject]) {
+    fileprivate func succeedWith(notification: Notification.Name?, closure: (([AnyObject]) -> Void)?, data: [AnyObject]) {
         
         assert(notification != nil || closure != nil)
         
@@ -232,7 +232,7 @@ open class APIController {
         }
     }
     
-    private func processQueue() -> (Reachability) -> Void  {
+    fileprivate func processQueue() -> (Reachability) -> Void  {
         
         return { (reachability) in
             if self.commandQueue.count > 0 {
