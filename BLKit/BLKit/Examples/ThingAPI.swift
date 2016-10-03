@@ -38,6 +38,7 @@ class ThingAPI : APIController {
         super.init(host:"http://thingserver.notaserver.com")
     }
     
+    
     // MARK: - API DEFINITIONS -
     // MARK: GET - /thing/[id]
     
@@ -52,7 +53,7 @@ class ThingAPI : APIController {
             jsonKey: "data.toomuchdata.things"
         )
         
-        serverInterationBy(parameters: parameters)
+        serverInteractionBy(parameters: parameters)
     }
 }
 

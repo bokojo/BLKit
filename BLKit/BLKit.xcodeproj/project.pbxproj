@@ -69,13 +69,6 @@
 			path = DataController;
 			sourceTree = "<group>";
 		};
-		B4125C981CC553E20063F654 /* ViewController */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = ViewController;
-			sourceTree = "<group>";
-		};
 		B4125C9A1CC553EF0063F654 /* Examples */ = {
 			isa = PBXGroup;
 			children = (
@@ -146,7 +139,6 @@
 			isa = PBXGroup;
 			children = (
 				B4125C961CC553E20063F654 /* DataController */,
-				B4125C981CC553E20063F654 /* ViewController */,
 			);
 			path = Controller;
 			sourceTree = "<group>";

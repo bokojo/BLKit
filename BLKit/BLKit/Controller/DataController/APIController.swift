@@ -8,9 +8,9 @@
 
 import Foundation
 
-public class APIController {
+open class APIController {
     
-    public class APIParameters {
+    open class APIParameters {
         
         public init(urlString: String,
              successNotification: Notification.Name? = nil,
@@ -99,7 +99,7 @@ public class APIController {
         static let domain = "APIController"
     }
         
-    public func serverInterationBy(parameters: APIParameters) {
+    public func serverInteractionBy(parameters: APIParameters) {
         self.serverInteractionBy(parameters: parameters, parseFunction: self.defaultParseFunction())
     }
     
@@ -162,13 +162,12 @@ public class APIController {
             var objectArray = [AnyObject]()
             var interior = json
             
-            if parameters.jsonKey != nil && interior is NSDictionary {
+            if parameters.jsonKey != nil {
                 let keysArray = parameters.jsonKey!.components(separatedBy:".")
                 
                 for key in keysArray {
                     if let d = (interior as! NSDictionary)[key] {
                         interior = d;
-                        
                     } else {
                         throw APIControllerErrors.BadJSONKey
                     }
