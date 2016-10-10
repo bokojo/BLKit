@@ -17,10 +17,10 @@ open class APIController {
              failureNotification: Notification.Name? = nil,
              successClosure: (([AnyObject]) -> Void)? = nil,
              failureClosure: ((Error?) -> Void)? = nil,
-             type: APIObject.Type? = nil,
+             type: APIModel.Type? = nil,
              jsonKey: String? = nil,
              httpVerb: httpVerb? = nil,
-             inputObject: APIObject? = nil,
+             inputObject: APIModel? = nil,
              cachePolicy: NSURLRequest.CachePolicy? = nil,
              timeoutInterval: Double? = nil,
              queueOnFailure: Bool = false) {
@@ -44,10 +44,10 @@ open class APIController {
         let failureNotification: Notification.Name?
         let successClosure: (([AnyObject]) -> Void)?
         let failureClosure: ((Error?) -> Void)?
-        let type: APIObject.Type?
+        let type: APIModel.Type?
         let jsonKey: String?
         let httpVerb: httpVerb?
-        let inputObject: APIObject?
+        let inputObject: APIModel?
         let cachePolicy: NSURLRequest.CachePolicy?
         let timeoutInterval: Double?
         let queueOnFailure: Bool

@@ -14,7 +14,7 @@
 		B439F92D1CC02DB3002F18F0 /* BLKit.h in Headers */ = {isa = PBXBuildFile; fileRef = B439F92C1CC02DB3002F18F0 /* BLKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B439F9341CC02DB3002F18F0 /* BLKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B439F9291CC02DB3002F18F0 /* BLKit.framework */; };
 		B439F9391CC02DB3002F18F0 /* BLKitTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B439F9381CC02DB3002F18F0 /* BLKitTests.swift */; };
-		B439F9491CC02E22002F18F0 /* APIObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = B439F9461CC02E22002F18F0 /* APIObject.swift */; };
+		B439F9491CC02E22002F18F0 /* APIModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B439F9461CC02E22002F18F0 /* APIModel.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -38,7 +38,7 @@
 		B439F9331CC02DB3002F18F0 /* BLKitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BLKitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		B439F9381CC02DB3002F18F0 /* BLKitTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BLKitTests.swift; sourceTree = "<group>"; };
 		B439F93A1CC02DB3002F18F0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		B439F9461CC02E22002F18F0 /* APIObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = APIObject.swift; sourceTree = "<group>"; };
+		B439F9461CC02E22002F18F0 /* APIModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = APIModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -146,7 +146,7 @@
 		B439F9451CC02E22002F18F0 /* Model */ = {
 			isa = PBXGroup;
 			children = (
-				B439F9461CC02E22002F18F0 /* APIObject.swift */,
+				B439F9461CC02E22002F18F0 /* APIModel.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -271,7 +271,7 @@
 			files = (
 				B4125C991CC553E20063F654 /* APIController.swift in Sources */,
 				B4125CA01CC56B110063F654 /* DataController.swift in Sources */,
-				B439F9491CC02E22002F18F0 /* APIObject.swift in Sources */,
+				B439F9491CC02E22002F18F0 /* APIModel.swift in Sources */,
 				B4125CD61CC6B6C90063F654 /* Reachability.swift in Sources */,
 				B4125C9C1CC553EF0063F654 /* ThingAPI.swift in Sources */,
 			);

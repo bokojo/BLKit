@@ -10,7 +10,7 @@ import UIKit
 
 // MARK: - Model -
 
-class Thing: APIObject {
+class Thing: APIModel {
     
     let name: String
     let thingID: Int
