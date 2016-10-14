@@ -13,7 +13,7 @@ import UIKit
 
 // MARK: - Model -
 
-class Weather: APIModel {
+class Weather: BLAPIModel {
     
     // Required properties;  can also be optional
     let conditions: String
@@ -38,7 +38,7 @@ class Weather: APIModel {
 
 // MARK: - Controller -
 
-class WeatherAPI : APIController {
+class WeatherAPI : BLAPIController {
     
     let WeatherUndergroundAPIKey = "5edc947d9938f768"
     

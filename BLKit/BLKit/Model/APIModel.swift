@@ -8,7 +8,7 @@
 
 import Foundation
 
-public protocol APIModel : AnyObject {
+public protocol BLAPIModel : AnyObject {
     
     init?(dictionary: NSDictionary)
 }

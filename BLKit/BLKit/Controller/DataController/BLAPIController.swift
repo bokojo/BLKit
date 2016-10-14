@@ -9,7 +9,7 @@
 import Foundation
 
 
-open class APIController
+open class BLAPIController
 {
     public typealias parseFuncType =
         (Data, APIParameters) throws -> [AnyObject]
@@ -24,10 +24,10 @@ open class APIController
               failureNotification: Notification.Name? = nil,
               successClosure: (([AnyObject]) -> Void)? = nil,
               failureClosure: ((NSError?) -> Void)? = nil,
-              type: APIModel.Type? = nil,
+              type: BLAPIModel.Type? = nil,
               jsonKey: String? = nil,
               httpVerb: httpVerb? = nil,
-              inputObject: APIModel? = nil,
+              inputObject: BLAPIModel? = nil,
               cachePolicy: NSURLRequest.CachePolicy? = nil,
               timeoutInterval: Double? = nil,
               queueOnFailure: Bool = false)
@@ -52,10 +52,10 @@ open class APIController
         let failureNotification: Notification.Name?
         let successClosure: (([AnyObject]) -> Void)?
         let failureClosure: ((NSError?) -> Void)?
-        let type: APIModel.Type?
+        let type: BLAPIModel.Type?
         let jsonKey: String?
         let httpVerb: httpVerb?
-        let inputObject: APIModel?
+        let inputObject: BLAPIModel?
         let cachePolicy: NSURLRequest.CachePolicy?
         let timeoutInterval: Double?
         let queueOnFailure: Bool
@@ -157,7 +157,7 @@ open class APIController
                                 domain: APIControllerErrors.domain,
                                 code: APIControllerErrors.UnreachableServer.rawValue,
                                 userInfo:
-                                [APIController.dictionaryKeys.reason :
+                                [BLAPIController.dictionaryKeys.reason :
                                     "Unreachable Host: \(self.host)"]))
                     }
                 
@@ -202,7 +202,7 @@ open class APIController
                             domain: APIControllerErrors.domain,
                             code: APIControllerErrors.EmptyDataSet.rawValue,
                             userInfo:
-                                [APIController.dictionaryKeys.reason :
+                                [BLAPIController.dictionaryKeys.reason :
                                     "No Data Returned at NSURLSession"]))
                 }
                 else
@@ -223,9 +223,9 @@ open class APIController
                                 domain: APIControllerErrors.domain,
                                 code: APIControllerErrors.BadJSONKey.rawValue,
                                 userInfo:
-                                    [APIController.dictionaryKeys.reason :
+                                    [BLAPIController.dictionaryKeys.reason :
                                         "Bad JSON path key: \(parameters.jsonKey)",
-                                    APIController.dictionaryKeys.json :
+                                    BLAPIController.dictionaryKeys.json :
                                         parameters.jsonKey!]))
                             
                     }
@@ -306,7 +306,7 @@ open class APIController
                 var userInfo : [String : AnyObject]?
                 if error != nil
                 {
-                    userInfo = [APIController.dictionaryKeys.error : error! as NSError]
+                    userInfo = [BLAPIController.dictionaryKeys.error : error! as NSError]
                 }
                     
                 NotificationCenter.default.post(
@@ -335,7 +335,7 @@ open class APIController
                 NotificationCenter.default.post(
                     name: note,
                     object: self,
-                    userInfo: [APIController.dictionaryKeys.data : data])
+                    userInfo: [BLAPIController.dictionaryKeys.data : data])
             }
                 
             if let block = closure
@@ -379,12 +379,12 @@ public extension Notification
         {
             return [AnyObject]()
         }
-        return self.userInfo![APIController.dictionaryKeys.data] as? Array
+        return self.userInfo![BLAPIController.dictionaryKeys.data] as? Array
     }
     
     func errorData() -> NSError?
     {
-        return self.userInfo?[APIController.dictionaryKeys.error] as? NSError
+        return self.userInfo?[BLAPIController.dictionaryKeys.error] as? NSError
     }
 }
 

@@ -26,8 +26,8 @@ class APIControllerTests: XCTestCase {
     func testBadURLFailure() {
         
         let expectation = self.expectation(description: "URL Test failed correctly.")
-        let api = APIController(host: "http://www.notanaddresszool.zool")
-        let param = APIController.APIParameters(
+        let api = BLAPIController(host: "http://www.notanaddresszool.zool")
+        let param = BLAPIController.APIParameters(
             urlString: "bad",
             successClosure: { (data: [AnyObject]) in XCTFail() },
             failureClosure: { (error: NSError?) in
@@ -56,8 +56,8 @@ class APIControllerTests: XCTestCase {
         let data = json.data(using: String.Encoding.ascii)
         
         
-        let api = APIController(host: "http://www.noserver.gov")
-        let param = APIController.APIParameters(
+        let api = BLAPIController(host: "http://www.noserver.gov")
+        let param = BLAPIController.APIParameters(
             urlString: "nothing",
             type: Weather.self
         )
@@ -72,9 +72,9 @@ class APIControllerTests: XCTestCase {
     
     func testBadJSONKeyFailure() {
         
-        let api = APIController(host: "https://womp.womp")
+        let api = BLAPIController(host: "https://womp.womp")
         let parseFunc = api.defaultParseFunction()
-        let param = APIController.APIParameters(
+        let param = BLAPIController.APIParameters(
             urlString: "blah",
             jsonKey: "this.is.a.bad.key"
         )
@@ -83,7 +83,7 @@ class APIControllerTests: XCTestCase {
         do {
             _ = try parseFunc(data!, param)
         }
-        catch APIController.APIControllerErrors.BadJSONKey
+        catch BLAPIController.APIControllerErrors.BadJSONKey
         {
             XCTAssert(true, "BadJSONKey caught.")
         }
