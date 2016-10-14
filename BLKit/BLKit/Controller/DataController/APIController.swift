@@ -8,22 +8,30 @@
 
 import Foundation
 
-open class APIController {
+
+open class APIController
+{
+    public typealias parseFuncType =
+        (Data, APIParameters) throws -> [AnyObject]
     
-    public class APIParameters {
-        
-        public init(urlString: String,
-             successNotification: Notification.Name? = nil,
-             failureNotification: Notification.Name? = nil,
-             successClosure: (([AnyObject]) -> Void)? = nil,
-             failureClosure: ((Error?) -> Void)? = nil,
-             type: APIModel.Type? = nil,
-             jsonKey: String? = nil,
-             httpVerb: httpVerb? = nil,
-             inputObject: APIModel? = nil,
-             cachePolicy: NSURLRequest.CachePolicy? = nil,
-             timeoutInterval: Double? = nil,
-             queueOnFailure: Bool = false) {
+    public typealias completionFuncType =
+        (Data?, URLResponse?, Error?) -> Void
+
+    public class APIParameters
+    {
+         init(urlString: String,
+              successNotification: Notification.Name? = nil,
+              failureNotification: Notification.Name? = nil,
+              successClosure: (([AnyObject]) -> Void)? = nil,
+              failureClosure: ((NSError?) -> Void)? = nil,
+              type: APIModel.Type? = nil,
+              jsonKey: String? = nil,
+              httpVerb: httpVerb? = nil,
+              inputObject: APIModel? = nil,
+              cachePolicy: NSURLRequest.CachePolicy? = nil,
+              timeoutInterval: Double? = nil,
+              queueOnFailure: Bool = false)
+        {
             
             self.urlString = urlString
             self.successNotification = successNotification
@@ -43,7 +51,7 @@ open class APIController {
         let successNotification: Notification.Name?
         let failureNotification: Notification.Name?
         let successClosure: (([AnyObject]) -> Void)?
-        let failureClosure: ((Error?) -> Void)?
+        let failureClosure: ((NSError?) -> Void)?
         let type: APIModel.Type?
         let jsonKey: String?
         let httpVerb: httpVerb?
@@ -53,31 +61,38 @@ open class APIController {
         let queueOnFailure: Bool
     }
     
-    public var defaultCachePolicy = NSURLRequest.CachePolicy.useProtocolCachePolicy
-    public var defaultTimeoutInterval = 60.0
+    let defaultCachePolicy = NSURLRequest.CachePolicy.useProtocolCachePolicy
     
-    public let host: String
-    public var reachability: Reachability?
+    let defaultTimeoutInterval = 60.0
     
-    public var commandQueue = [URLSessionTask]()
-    public let urlSession = URLSession(configuration: URLSessionConfiguration.ephemeral)
+    let host: String
     
-    public init(host: String) {
-        
+    var reachability: Reachability?
+    
+    lazy var commandQueue = [URLSessionTask]()
+    
+    let urlSession = URLSession(configuration: URLSessionConfiguration.ephemeral)
+    
+    init(host: String)
+    {
         self.host = host;
         self.reachability = Reachability(hostname: self.host)
         
-        if (self.reachability != nil) {
+        if self.reachability != nil
+        {
             self.reachability!.whenReachable = self.processQueue()
         }
     }
     
-    deinit {
+    deinit
+    {
         self.reachability = nil
+        self.commandQueue.removeAll()
         self.urlSession.invalidateAndCancel()
     }
     
-    public struct dictionaryKeys {
+    struct dictionaryKeys
+    {
         static let data = "data"
         static let error = "error"
         static let json = "json"
@@ -85,7 +100,8 @@ open class APIController {
         static let reason = "reason"
     }
     
-    public enum httpVerb: String {
+    enum httpVerb: String
+    {
         case GET = "GET"
         case POST = "POST"
         case PUT = "PUT"
@@ -93,155 +109,257 @@ open class APIController {
         case DELETE = "DELETE"
     }
     
-    public enum APIControllerErrors: Int, Error {
+    enum APIControllerErrors: Int, Error
+    {
         case BadJSONKey = 101
         case UnreachableServer
+        case EmptyDataSet
         static let domain = "APIController"
     }
-        
-    public func serverInteractionBy(parameters: APIParameters) {
+    
+    func serverInteractionBy(parameters: APIParameters)
+    {
         self.serverInteractionBy(parameters: parameters, parseFunction: self.defaultParseFunction())
     }
     
-    public func serverInteractionBy(parameters: APIParameters, parseFunction: @escaping ((Data, APIParameters)
-        throws -> Void)) {
-        
-        if let url = URL(string:parameters.urlString) {
-            var request = URLRequest(url: url, cachePolicy: parameters.cachePolicy ?? self.defaultCachePolicy,
-                                timeoutInterval: parameters.timeoutInterval ?? self.defaultTimeoutInterval)
+    func serverInteractionBy(parameters: APIParameters,
+                                    parseFunction: @escaping parseFuncType)
+    {
+        if let url = URL(string:parameters.urlString)
+        {
+            var request = URLRequest(
+                url: url,
+                cachePolicy: parameters.cachePolicy ?? self.defaultCachePolicy,
+                timeoutInterval: parameters.timeoutInterval ?? self.defaultTimeoutInterval)
+            
             request.httpMethod = parameters.httpVerb?.rawValue ?? httpVerb.GET.rawValue
             
-            let completionBlock: (Data?, URLResponse?, Error?) -> Void = { (data, response, error) in
-                
-                DispatchQueue.global(qos: DispatchQoS.QoSClass.background).async {
-                    
-                    if (error != nil || data == nil) {
-                        self.failWith(notification: parameters.failureNotification, closure:parameters.failureClosure, error: error)
-                        
-                    } else {
-                        do {
-                            try parseFunction(data!, parameters)
-                            
-                        } catch APIControllerErrors.BadJSONKey {
-                            self.failWith(notification: parameters.failureNotification, closure: parameters.failureClosure, error: NSError(domain: APIControllerErrors.domain, code: APIControllerErrors.BadJSONKey.rawValue, userInfo: [APIController.dictionaryKeys.reason : "Bad JSON path key: \(parameters.jsonKey)", APIController.dictionaryKeys.json : parameters.jsonKey!]))
-                            
-                        } catch {
-                            self.failWith(notification: parameters.failureNotification, closure: parameters.failureClosure, error:nil)
-                        }
+            let completionFunc = self.completionHandler(
+                parameters: parameters,
+                parseFunction: parseFunction)
+            
+            let task = self.urlSession.dataTask(with: request, completionHandler: completionFunc)
+        
+            if let reach = self.reachability
+            {
+                guard reach.isReachable else
+                {
+                    if let cachedResponse = URLCache.shared.cachedResponse(for: request)
+                    {
+                        completionFunc(cachedResponse.data, cachedResponse.response, nil)
                     }
-                }
-            }
-            
-            let task = self.urlSession.dataTask(with: request, completionHandler: completionBlock)
-            
-            if !(self.reachability != nil && self.reachability!.isReachable) {
-                if let cachedResponse = URLCache.shared.cachedResponse(for: request) {
-                    completionBlock(cachedResponse.data, cachedResponse.response, nil)
-               
-                } else {
-                    self.failWith(notification: parameters.failureNotification, closure: parameters.failureClosure, error: NSError(domain: APIControllerErrors.domain, code: APIControllerErrors.UnreachableServer.rawValue, userInfo: [APIController.dictionaryKeys.reason : "Unreachable Host: \(self.host)"]))
+                    else
+                    {
+                        self.failWith(
+                            notification: parameters.failureNotification,
+                            closure: parameters.failureClosure,
+                            error: NSError(
+                                domain: APIControllerErrors.domain,
+                                code: APIControllerErrors.UnreachableServer.rawValue,
+                                userInfo:
+                                [APIController.dictionaryKeys.reason :
+                                    "Unreachable Host: \(self.host)"]))
+                    }
+                
+                    if parameters.queueOnFailure
+                    {
+                        self.commandQueue.append(task)
+                    }
+                    
+                    return;
                 }
                 
-                if parameters.queueOnFailure {
-                    self.commandQueue.append(task)
-                }
-                
-            } else {
-                    task.resume()
+                task.resume()
             }
-            
-        } else {
+        }
+        else
+        {
             assertionFailure("BAD URL: \(parameters.urlString)")
         }
     }
     
-    public func defaultParseFunction() -> (Data, APIParameters) throws -> Void {
+    func completionHandler(parameters: APIParameters,
+                                parseFunction: @escaping parseFuncType) -> completionFuncType
+    {
+        return { (data, response, error) in
+            
+            DispatchQueue.global(qos: DispatchQoS.QoSClass.background).async
+            {
+                if error != nil
+                {
+                    self.failWith(
+                        notification: parameters.failureNotification,
+                        closure:parameters.failureClosure,
+                        error: (error as! NSError))
+                        
+                }
+                else if data == nil
+                {
+                    self.failWith(
+                        notification: parameters.failureNotification,
+                        closure: parameters.failureClosure,
+                        error: NSError(
+                            domain: APIControllerErrors.domain,
+                            code: APIControllerErrors.EmptyDataSet.rawValue,
+                            userInfo:
+                                [APIController.dictionaryKeys.reason :
+                                    "No Data Returned at NSURLSession"]))
+                }
+                else
+                {
+                    do
+                    {
+                        let models = try parseFunction(data!, parameters)
+                        self.succeedWith(
+                            notification: parameters.successNotification,
+                            closure: parameters.successClosure, data: models)
+                    }
+                    catch APIControllerErrors.BadJSONKey
+                    {
+                        self.failWith(
+                            notification: parameters.failureNotification,
+                            closure: parameters.failureClosure,
+                            error: NSError(
+                                domain: APIControllerErrors.domain,
+                                code: APIControllerErrors.BadJSONKey.rawValue,
+                                userInfo:
+                                    [APIController.dictionaryKeys.reason :
+                                        "Bad JSON path key: \(parameters.jsonKey)",
+                                    APIController.dictionaryKeys.json :
+                                        parameters.jsonKey!]))
+                            
+                    }
+                    catch
+                    {
+                        self.failWith(
+                            notification: parameters.failureNotification,
+                            closure: parameters.failureClosure,
+                            error:nil)
+                    }
+                }
+            }
+        }
+    }
+    
+    final func defaultParseFunction() -> (Data, APIParameters) throws -> [AnyObject]
+    {
         return { (data, parameters) in
             
-            let json = try JSONSerialization.jsonObject(with: data, options:JSONSerialization.ReadingOptions())
-            var objectArray = [AnyObject]()
+            let json = try JSONSerialization.jsonObject(
+                with: data,
+                options:JSONSerialization.ReadingOptions())
+            
             var interior = json
             
-            if parameters.jsonKey != nil {
+            if parameters.jsonKey != nil
+            {
                 let keysArray = parameters.jsonKey!.components(separatedBy:".")
                 
-                for key in keysArray {
-                    if let d = (interior as! NSDictionary)[key] {
+                for key in keysArray
+                {
+                    if let d = (interior as! NSDictionary)[key]
+                    {
                         interior = d;
-                    } else {
+                    }
+                    else
+                    {
                         throw APIControllerErrors.BadJSONKey
                     }
                 }
             }
             
-            if interior is NSDictionary {
+            if interior is NSDictionary
+            {
                 interior = [interior]
             }
             
             let rawArray = interior as! [NSDictionary]
             
-            if parameters.type != nil {
-                for dictionary: NSDictionary in rawArray {
-                    if let object = parameters.type!.init(dictionary: dictionary) {
-                        objectArray.append(object)
-                    }
-                }
-            } else {
+            var objectArray = [AnyObject!]()
+            
+            if let type = parameters.type
+            {
+                objectArray = rawArray.map { type.init(dictionary: $0) }.filter { $0 != nil }
+            }
+            else
+            {
                 objectArray = rawArray
             }
             
-            self.succeedWith(notification: parameters.successNotification, closure: parameters.successClosure, data: objectArray)
+            return objectArray
         }
     }
-    
-    fileprivate func failWith(notification: Notification.Name?, closure: ((Error?) -> Void)?, error: Error?) {
-        
-        if (notification == nil && closure == nil) {
+
+    fileprivate func failWith(notification: Notification.Name?,
+                              closure: ((NSError?) -> Void)?,
+                              error: NSError?)
+    {
+        if notification == nil && closure == nil
+        {
             return;
         }
         
-        DispatchQueue.main.async {
-            
-            if let note = notification {
+        DispatchQueue.main.async
+        {
+            if let note = notification
+            {
                 var userInfo : [String : AnyObject]?
-                if (error != nil) {
-                    userInfo = [APIController.dictionaryKeys.error : error! as AnyObject]
+                if error != nil
+                {
+                    userInfo = [APIController.dictionaryKeys.error : error! as NSError]
                 }
-                
-                NotificationCenter.default.post(name: note, object: self, userInfo: userInfo)
+                    
+                NotificationCenter.default.post(
+                    name: note,
+                    object: self,
+                    userInfo: userInfo)
             }
-            
-            if let block = closure {
+                
+            if let block = closure
+            {
                 block(error)
             }
         }
     }
     
-    fileprivate func succeedWith(notification: Notification.Name?, closure: (([AnyObject]) -> Void)?, data: [AnyObject]) {
-        
+    fileprivate func succeedWith(notification: Notification.Name?,
+                                 closure: (([AnyObject]) -> Void)?,
+                                 data: [AnyObject])
+    {
         assert(notification != nil || closure != nil)
         
-        DispatchQueue.main.async {
-            if let note = notification {
-                NotificationCenter.default.post(name: note, object: self, userInfo: [APIController.dictionaryKeys.data : data])
+        DispatchQueue.main.async
+        {
+            if let note = notification
+            {
+                NotificationCenter.default.post(
+                    name: note,
+                    object: self,
+                    userInfo: [APIController.dictionaryKeys.data : data])
             }
-            
-            if let block = closure {
+                
+            if let block = closure
+            {
                 block(data)
             }
         }
     }
     
-    fileprivate func processQueue() -> (Reachability) -> Void  {
-        
-        return { (reachability) in
-            if self.commandQueue.count > 0 {
+    func processQueue() -> (Reachability) -> Void
+    {
+        return { [unowned self] (reachability) in
+            if self.commandQueue.count > 0
+            {
                 var newQueue = [URLSessionTask]()
                 
-                for task in self.commandQueue {
-                    if (reachability.isReachable) {
+                for task in self.commandQueue
+                {
+                    if reachability.isReachable
+                    {
                         task.resume()
-                    } else {
+                    }
+                    else
+                    {
                         newQueue.append(task)
                     }
                 }
@@ -250,23 +368,23 @@ open class APIController {
             }
         }
     }
-    
 }
 
-extension Notification {
+public extension Notification
+{
     
-    public func objectData() -> [AnyObject] {
-        
-        if (self.userInfo == nil) {
+    func objectData() -> [AnyObject]?
+    {
+        if self.userInfo == nil
+        {
             return [AnyObject]()
         }
-        
-        return self.userInfo![APIController.dictionaryKeys.data] as! Array
+        return self.userInfo![APIController.dictionaryKeys.data] as? Array
     }
     
-    public func errorData() -> Error? {
-        
-        return self.userInfo?[APIController.dictionaryKeys.error] as? Error
+    func errorData() -> NSError?
+    {
+        return self.userInfo?[APIController.dictionaryKeys.error] as? NSError
     }
 }
 
