@@ -47,6 +47,29 @@ class APIControllerTests: XCTestCase {
                 if error == nil { XCTAssert(true) } else { XCTFail() } })
     }
     
+    // Parse Function tests
+    func testParsingExclusions()
+    {
+        let goodDict = "{ \"conditions\" : \"good\", \"icon_url\" : \"url goes here\" }"
+        let badDict = "{ \"other\" : \"bad dict\" }"
+        let json = "[\(goodDict),\(badDict),\(goodDict),\(goodDict)]"
+        let data = json.data(using: String.Encoding.ascii)
+        
+        
+        let api = APIController(host: "http://www.noserver.gov")
+        let param = APIController.APIParameters(
+            urlString: "nothing",
+            type: Weather.self
+        )
+        
+        let parseFunc = api.defaultParseFunction()
+        
+        let output = try? parseFunc(data!, param)
+        
+        XCTAssert(output?.count == 3)
+    }
+
+    
     func testBadJSONKeyFailure() {
         
         let api = APIController(host: "https://womp.womp")
@@ -69,6 +92,8 @@ class APIControllerTests: XCTestCase {
             XCTFail("Other exception thrown. Failed test.")
         }
     }
+   
+    // Reachability needs replacing.
     
 //    func testReachabilityQueueing() {
 //        
@@ -128,26 +153,6 @@ class APIControllerTests: XCTestCase {
 //        
 //    }
     
-    func testParsing()
-    {
-        let goodDict = "{ \"conditions\" : \"good\", \"icon_url\" : \"url goes here\" }"
-        let badDict = "{ \"other\" : \"bad dict\" }"
-        let json = "[\(goodDict),\(badDict),\(goodDict),\(goodDict)]"
-        let data = json.data(using: String.Encoding.ascii)
-        
-        
-        let api = APIController(host: "http://www.noserver.gov")
-        let param = APIController.APIParameters(
-            urlString: "nothing",
-            type: Weather.self
-        )
-        
-        let parseFunc = api.defaultParseFunction()
-        
-        let output = try? parseFunc(data!, param)
-        
-        XCTAssert(output?.count == 3)
-    }
     
     
     
