@@ -13,18 +13,21 @@ import UIKit
 
 // MARK: - Model -
 
-class Weather: BLAPIModel {
+class Weather: BLAPIModel
+{
     
     // Required properties;  can also be optional
     let conditions: String
     let icon_url: String
     
-    init(conditions: String, icon_url: String) {
+    init(conditions: String, icon_url: String)
+    {
         self.conditions = conditions
         self.icon_url = icon_url
     }
     
-    required convenience init?(dictionary: NSDictionary) {
+    required convenience init?(dictionary: NSDictionary)
+    {
         // guard for required; equally possible to assign and pass incomplete
         // object
         guard
@@ -38,13 +41,15 @@ class Weather: BLAPIModel {
 
 // MARK: - Controller -
 
-class WeatherAPI : BLAPIController {
+class WeatherAPI : BLAPIController
+{
     
     let WeatherUndergroundAPIKey = "5edc947d9938f768"
     
     // http://api.wunderground.com/api/5edc947d9938f768/forecast/q/CA/San_Francisco.json
     
-    init() {
+    init()
+    {
         super.init(host:"https://api.wunderground.com/")
     }
     
@@ -52,7 +57,8 @@ class WeatherAPI : BLAPIController {
     // MARK: - API DEFINITIONS -
     // MARK: GET - /thing/[id]
     
-    func getSFWeather(success: @escaping (([AnyObject]) -> Void), failure: ((NSError?) -> Void)?) {
+    func getSFWeather(success: @escaping (([AnyObject]) -> Void), failure: ((NSError?) -> Void)?)
+    {
         
         let parameters = APIParameters(
             
@@ -69,12 +75,14 @@ class WeatherAPI : BLAPIController {
 
 // MARK: - View Controller -
 
-class ExampleViewController : UIViewController {
+class ExampleViewController : UIViewController
+{
     
     let apiController = WeatherAPI()
     var data = [Weather]()
     
-    override func viewDidLoad() {
+    override func viewDidLoad()
+    {
         super.viewDidLoad()
         
         let conditions_label = UILabel(frame: CGRect(x: 40.0, y: 40.0, width: 200.0, height: 60.0))

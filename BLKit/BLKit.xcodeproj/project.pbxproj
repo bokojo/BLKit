@@ -13,7 +13,7 @@
 		B439F92D1CC02DB3002F18F0 /* BLKit.h in Headers */ = {isa = PBXBuildFile; fileRef = B439F92C1CC02DB3002F18F0 /* BLKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B439F9341CC02DB3002F18F0 /* BLKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B439F9291CC02DB3002F18F0 /* BLKit.framework */; };
 		B439F9391CC02DB3002F18F0 /* BLKitTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B439F9381CC02DB3002F18F0 /* BLKitTests.swift */; };
-		B439F9491CC02E22002F18F0 /* APIModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B439F9461CC02E22002F18F0 /* APIModel.swift */; };
+		B439F9491CC02E22002F18F0 /* BLAPIModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B439F9461CC02E22002F18F0 /* BLAPIModel.swift */; };
 		B48909321DABFE0E008AFA87 /* WundergroundAPITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B48909311DABFE0E008AFA87 /* WundergroundAPITests.swift */; };
 /* End PBXBuildFile section */
 
@@ -37,7 +37,7 @@
 		B439F9331CC02DB3002F18F0 /* BLKitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BLKitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		B439F9381CC02DB3002F18F0 /* BLKitTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BLKitTests.swift; sourceTree = "<group>"; };
 		B439F93A1CC02DB3002F18F0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		B439F9461CC02E22002F18F0 /* APIModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = APIModel.swift; sourceTree = "<group>"; };
+		B439F9461CC02E22002F18F0 /* BLAPIModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BLAPIModel.swift; sourceTree = "<group>"; };
 		B48909311DABFE0E008AFA87 /* WundergroundAPITests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WundergroundAPITests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -146,7 +146,7 @@
 		B439F9451CC02E22002F18F0 /* Model */ = {
 			isa = PBXGroup;
 			children = (
-				B439F9461CC02E22002F18F0 /* APIModel.swift */,
+				B439F9461CC02E22002F18F0 /* BLAPIModel.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -220,7 +220,9 @@
 				TargetAttributes = {
 					B439F9281CC02DB3002F18F0 = {
 						CreatedOnToolsVersion = 7.3;
+						DevelopmentTeam = 5XC48K67GS;
 						LastSwiftMigration = 0800;
+						ProvisioningStyle = Automatic;
 					};
 					B439F9321CC02DB3002F18F0 = {
 						CreatedOnToolsVersion = 7.3;
@@ -270,7 +272,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				B4125C991CC553E20063F654 /* BLAPIController.swift in Sources */,
-				B439F9491CC02E22002F18F0 /* APIModel.swift in Sources */,
+				B439F9491CC02E22002F18F0 /* BLAPIModel.swift in Sources */,
 				B4125CD61CC6B6C90063F654 /* Reachability.swift in Sources */,
 				B4125C9C1CC553EF0063F654 /* WundergroundAPI.swift in Sources */,
 			);
@@ -398,33 +400,39 @@
 			buildSettings = {
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEFINES_MODULE = YES;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = 5XC48K67GS;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				EMBED_ASSET_PACKS_IN_PRODUCT_BUNDLE = NO;
 				INFOPLIST_FILE = BLKit/Info.plist;
-				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				LD_GENERATE_MAP_FILE = YES;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.buffaloladybug.BLKit;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SWIFT_OBJC_BRIDGING_HEADER = "";
 				SWIFT_VERSION = 3.0;
+				VALIDATE_PRODUCT = YES;
 			};
 			name = Debug;
 		};
 		B439F93F1CC02DB3002F18F0 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)";
 				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = 5XC48K67GS;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				EMBED_ASSET_PACKS_IN_PRODUCT_BUNDLE = NO;
 				INFOPLIST_FILE = BLKit/Info.plist;
-				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				LD_GENERATE_MAP_FILE = YES;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.buffaloladybug.BLKit;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
