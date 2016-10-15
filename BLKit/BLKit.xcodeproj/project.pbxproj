@@ -138,6 +138,7 @@
 		B439F9431CC02E22002F18F0 /* Controller */ = {
 			isa = PBXGroup;
 			children = (
+				B46F10E11DB2BA9000B5FC23 /* ViewController */,
 				B4125C961CC553E20063F654 /* DataController */,
 			);
 			path = Controller;
@@ -156,6 +157,13 @@
 			children = (
 			);
 			path = View;
+			sourceTree = "<group>";
+		};
+		B46F10E11DB2BA9000B5FC23 /* ViewController */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = ViewController;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -408,7 +416,7 @@
 				INFOPLIST_FILE = BLKit/Info.plist;
 				LD_GENERATE_MAP_FILE = YES;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				ONLY_ACTIVE_ARCH = YES;
+				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = com.buffaloladybug.BLKit;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -432,7 +440,7 @@
 				INFOPLIST_FILE = BLKit/Info.plist;
 				LD_GENERATE_MAP_FILE = YES;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				ONLY_ACTIVE_ARCH = YES;
+				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = com.buffaloladybug.BLKit;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;

@@ -30,7 +30,7 @@ open class BLAPIController
               inputObject: BLAPIModel? = nil,
               cachePolicy: NSURLRequest.CachePolicy? = nil,
               timeoutInterval: Double? = nil,
-              queueOnFailure: Bool = false)
+              queueOnFailure: QueueBehavior = .NoQueueing)
         {
             
             self.urlString = urlString
@@ -58,7 +58,16 @@ open class BLAPIController
         public let inputObject: BLAPIModel?
         public let cachePolicy: NSURLRequest.CachePolicy?
         public let timeoutInterval: Double?
-        public let queueOnFailure: Bool
+        public let queueOnFailure: QueueBehavior
+        
+        public enum QueueBehavior: Int
+        {
+            case NoQueueing
+            case FIFO
+            case LastRequestOnly
+            case LastUniqueRequest
+            
+        }
     }
     
     public let defaultCachePolicy = NSURLRequest.CachePolicy.useProtocolCachePolicy
@@ -77,11 +86,7 @@ open class BLAPIController
     {
         self.host = host;
         self.reachability = Reachability(hostname: self.host)
-        
-        if self.reachability != nil
-        {
-            self.reachability!.whenReachable = self.processQueue()
-        }
+        self.configureReachability()
     }
     
     deinit
@@ -97,7 +102,6 @@ open class BLAPIController
         static let error = "error"
         static let json = "json"
         static let rawData = "rawdata"
-        static let reason = "reason"
     }
     
     public enum httpVerb: String
@@ -117,67 +121,67 @@ open class BLAPIController
         static let domain = "APIController"
     }
     
-    public func serverInteractionBy(parameters: APIParameters)
+    public func serverInteractionBy(parameters: APIParameters) -> URLSessionDataTask?
     {
-        self.serverInteractionBy(parameters: parameters, parseFunction: self.defaultParseFunction())
+        return self.serverInteractionBy(parameters: parameters, parseFunction: self.defaultParseFunction())
     }
     
     public func serverInteractionBy(parameters: APIParameters,
-                                    parseFunction: @escaping parseFuncType)
+                                    parseFunction: @escaping parseFuncType) -> URLSessionDataTask?
     {
-        if let url = URL(string:parameters.urlString)
-        {
-            var request = URLRequest(
-                url: url,
-                cachePolicy: parameters.cachePolicy ?? self.defaultCachePolicy,
-                timeoutInterval: parameters.timeoutInterval ?? self.defaultTimeoutInterval)
-            
-            request.httpMethod = parameters.httpVerb?.rawValue ?? httpVerb.GET.rawValue
-            
-            let completionFunc = self.completionHandler(
-                parameters: parameters,
-                parseFunction: parseFunction)
-            
-            let task = self.urlSession.dataTask(with: request, completionHandler: completionFunc)
-        
-            if let reach = self.reachability
-            {
-                guard reach.isReachable else
-                {
-                    if let cachedResponse = URLCache.shared.cachedResponse(for: request)
-                    {
-                        completionFunc(cachedResponse.data, cachedResponse.response, nil)
-                    }
-                    else
-                    {
-                        self.failWith(
-                            notification: parameters.failureNotification,
-                            closure: parameters.failureClosure,
-                            error: NSError(
-                                domain: APIControllerErrors.domain,
-                                code: APIControllerErrors.UnreachableServer.rawValue,
-                                userInfo:
-                                [BLAPIController.dictionaryKeys.reason :
-                                    "Unreachable Host: \(self.host)"]))
-                    }
-                
-                    if parameters.queueOnFailure
-                    {
-                        self.commandQueue.append(task)
-                    }
-                    
-                    return;
-                }
-                
-                task.resume()
-            }
-        }
-        else
+        guard let url = URL(string:parameters.urlString) else
         {
             assertionFailure("BAD URL: \(parameters.urlString)")
+            return nil
         }
+        
+        var request = URLRequest(
+            url: url,
+            cachePolicy: parameters.cachePolicy ?? self.defaultCachePolicy,
+            timeoutInterval: parameters.timeoutInterval ?? self.defaultTimeoutInterval)
+        
+        request.httpMethod = parameters.httpVerb?.rawValue ?? httpVerb.GET.rawValue
+        
+        let completionFunc = self.completionHandler(
+            parameters: parameters,
+            parseFunction: parseFunction)
+        
+        let task = self.urlSession.dataTask(with: request, completionHandler: completionFunc)
+        
+        if let reach = self.reachability
+        {
+            if reach.isReachable == false
+            {
+                if let cachedResponse = URLCache.shared.cachedResponse(for: request)
+                {
+                    completionFunc(cachedResponse.data, cachedResponse.response, nil)
+                }
+                else
+                {
+                    self.failWith(
+                        notification: parameters.failureNotification,
+                        closure: parameters.failureClosure,
+                        error: NSError(
+                            domain: APIControllerErrors.domain,
+                            code: APIControllerErrors.UnreachableServer.rawValue,
+                            userInfo:
+                            [NSLocalizedDescriptionKey :
+                                "Unreachable Host: \(self.host)"]))
+                }
+                
+                if parameters.queueOnFailure != .NoQueueing
+                {
+                    self.addTaskToQueue(task: task, parameters: parameters)
+                }
+                
+                return task
+            }
+        }
+        
+        task.resume()
+        return task
     }
-    
+
     public func completionHandler(parameters: APIParameters,
                                 parseFunction: @escaping parseFuncType) -> completionFuncType
     {
@@ -202,7 +206,7 @@ open class BLAPIController
                             domain: APIControllerErrors.domain,
                             code: APIControllerErrors.EmptyDataSet.rawValue,
                             userInfo:
-                                [BLAPIController.dictionaryKeys.reason :
+                                [NSLocalizedDescriptionKey :
                                     "No Data Returned at NSURLSession"]))
                 }
                 else
@@ -223,7 +227,7 @@ open class BLAPIController
                                 domain: APIControllerErrors.domain,
                                 code: APIControllerErrors.BadJSONKey.rawValue,
                                 userInfo:
-                                    [BLAPIController.dictionaryKeys.reason :
+                                    [NSLocalizedDescriptionKey :
                                         "Bad JSON path key: \(parameters.jsonKey)",
                                     BLAPIController.dictionaryKeys.json :
                                         parameters.jsonKey!]))
@@ -368,7 +372,38 @@ open class BLAPIController
             }
         }
     }
+    
+    public func addTaskToQueue(task: URLSessionDataTask, parameters: APIParameters)
+    {
+        switch parameters.queueOnFailure
+        {
+            case .NoQueueing:
+                break;
+            
+            case .LastRequestOnly:
+                self.commandQueue = [task]
+            
+            case .LastUniqueRequest:
+                var newQueue = self.commandQueue.filter() { queuedTask in return queuedTask.currentRequest?.url != task.currentRequest?.url }
+                newQueue.append(task)
+                self.commandQueue = newQueue
+            
+            case .FIFO:
+                self.commandQueue.append(task)
+        }
+        
+    }
+    
+    func configureReachability()
+    {
+        if self.reachability != nil
+        {
+            self.reachability!.whenReachable = self.processQueue()
+            do { try self.reachability!.startNotifier() } catch {}
+        }
+    }
 }
+    
 
 public extension Notification
 {
