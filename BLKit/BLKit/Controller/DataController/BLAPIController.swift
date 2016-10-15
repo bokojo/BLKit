@@ -19,7 +19,7 @@ open class BLAPIController
 
     public class APIParameters
     {
-         init(urlString: String,
+         public init(urlString: String,
               successNotification: Notification.Name? = nil,
               failureNotification: Notification.Name? = nil,
               successClosure: (([AnyObject]) -> Void)? = nil,
@@ -47,33 +47,33 @@ open class BLAPIController
             self.queueOnFailure = queueOnFailure
         }
         
-        let urlString: String
-        let successNotification: Notification.Name?
-        let failureNotification: Notification.Name?
-        let successClosure: (([AnyObject]) -> Void)?
-        let failureClosure: ((NSError?) -> Void)?
-        let type: BLAPIModel.Type?
-        let jsonKey: String?
-        let httpVerb: httpVerb?
-        let inputObject: BLAPIModel?
-        let cachePolicy: NSURLRequest.CachePolicy?
-        let timeoutInterval: Double?
-        let queueOnFailure: Bool
+        public let urlString: String
+        public let successNotification: Notification.Name?
+        public let failureNotification: Notification.Name?
+        public let successClosure: (([AnyObject]) -> Void)?
+        public let failureClosure: ((NSError?) -> Void)?
+        public let type: BLAPIModel.Type?
+        public let jsonKey: String?
+        public let httpVerb: httpVerb?
+        public let inputObject: BLAPIModel?
+        public let cachePolicy: NSURLRequest.CachePolicy?
+        public let timeoutInterval: Double?
+        public let queueOnFailure: Bool
     }
     
-    let defaultCachePolicy = NSURLRequest.CachePolicy.useProtocolCachePolicy
+    public let defaultCachePolicy = NSURLRequest.CachePolicy.useProtocolCachePolicy
     
-    let defaultTimeoutInterval = 60.0
+    public let defaultTimeoutInterval = 60.0
     
-    let host: String
+    public let host: String
     
-    var reachability: Reachability?
+    public var reachability: Reachability?
     
-    lazy var commandQueue = [URLSessionTask]()
+    public lazy var commandQueue = [URLSessionTask]()
     
-    let urlSession = URLSession(configuration: URLSessionConfiguration.ephemeral)
+    public let urlSession = URLSession(configuration: URLSessionConfiguration.ephemeral)
     
-    init(host: String)
+    public init(host: String)
     {
         self.host = host;
         self.reachability = Reachability(hostname: self.host)
@@ -91,7 +91,7 @@ open class BLAPIController
         self.urlSession.invalidateAndCancel()
     }
     
-    struct dictionaryKeys
+    public struct dictionaryKeys
     {
         static let data = "data"
         static let error = "error"
@@ -100,7 +100,7 @@ open class BLAPIController
         static let reason = "reason"
     }
     
-    enum httpVerb: String
+    public enum httpVerb: String
     {
         case GET = "GET"
         case POST = "POST"
@@ -109,7 +109,7 @@ open class BLAPIController
         case DELETE = "DELETE"
     }
     
-    enum APIControllerErrors: Int, Error
+    public enum APIControllerErrors: Int, Error
     {
         case BadJSONKey = 101
         case UnreachableServer
@@ -117,12 +117,12 @@ open class BLAPIController
         static let domain = "APIController"
     }
     
-    func serverInteractionBy(parameters: APIParameters)
+    public func serverInteractionBy(parameters: APIParameters)
     {
         self.serverInteractionBy(parameters: parameters, parseFunction: self.defaultParseFunction())
     }
     
-    func serverInteractionBy(parameters: APIParameters,
+    public func serverInteractionBy(parameters: APIParameters,
                                     parseFunction: @escaping parseFuncType)
     {
         if let url = URL(string:parameters.urlString)
@@ -178,7 +178,7 @@ open class BLAPIController
         }
     }
     
-    func completionHandler(parameters: APIParameters,
+    public func completionHandler(parameters: APIParameters,
                                 parseFunction: @escaping parseFuncType) -> completionFuncType
     {
         return { (data, response, error) in
@@ -241,7 +241,7 @@ open class BLAPIController
         }
     }
     
-    final func defaultParseFunction() -> (Data, APIParameters) throws -> [AnyObject]
+    public final func defaultParseFunction() -> (Data, APIParameters) throws -> [AnyObject]
     {
         return { (data, parameters) in
             
@@ -345,7 +345,7 @@ open class BLAPIController
         }
     }
     
-    func processQueue() -> (Reachability) -> Void
+    public func processQueue() -> (Reachability) -> Void
     {
         return { [unowned self] (reachability) in
             if self.commandQueue.count > 0
@@ -373,7 +373,7 @@ open class BLAPIController
 public extension Notification
 {
     
-    func objectData() -> [AnyObject]?
+    public func objectData() -> [AnyObject]?
     {
         if self.userInfo == nil
         {
@@ -382,7 +382,7 @@ public extension Notification
         return self.userInfo![BLAPIController.dictionaryKeys.data] as? Array
     }
     
-    func errorData() -> NSError?
+    public func errorData() -> NSError?
     {
         return self.userInfo?[BLAPIController.dictionaryKeys.error] as? NSError
     }
