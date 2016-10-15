@@ -47,7 +47,7 @@ class WundergroundAPITests: XCTestCase
             }
         }
             
-        apiController.getSFWeather(success: success, failure: failure)
+        _ = apiController.getSFWeather(success: success, failure: failure)
         
         self.waitForExpectations(timeout: 30.0, handler: { (error: Error?) in
             if error != nil

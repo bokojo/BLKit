@@ -41,7 +41,7 @@ class APIControllerTests: XCTestCase {
             }
         )
         
-        api.serverInteractionBy(parameters: param)
+        _ = api.serverInteractionBy(parameters: param)
         
         self.waitForExpectations(timeout: 30.0, handler: { (error: Error?) -> Void in
                 if error == nil { XCTAssert(true) } else { XCTFail() } })

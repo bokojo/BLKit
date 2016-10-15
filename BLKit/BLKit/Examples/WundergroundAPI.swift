@@ -57,7 +57,7 @@ class WeatherAPI : BLAPIController
     // MARK: - API DEFINITIONS -
     // MARK: GET - /thing/[id]
     
-    func getSFWeather(success: @escaping (([AnyObject]) -> Void), failure: ((NSError?) -> Void)?)
+    func getSFWeather(success: @escaping (([AnyObject]) -> Void), failure: ((NSError?) -> Void)?) -> URLSessionDataTask?
     {
         
         let parameters = APIParameters(
@@ -69,7 +69,7 @@ class WeatherAPI : BLAPIController
             jsonKey: "forecast.simpleforecast.forecastday"
         )
         
-        serverInteractionBy(parameters: parameters)
+        return serverInteractionBy(parameters: parameters)
     }
 }
 
@@ -80,6 +80,15 @@ class ExampleViewController : UIViewController
     
     let apiController = WeatherAPI()
     var data = [Weather]()
+    weak var task: URLSessionDataTask?
+    
+    deinit
+    {
+        if let t = task
+        {
+            t.cancel()
+        }
+    }
     
     override func viewDidLoad()
     {
@@ -91,23 +100,26 @@ class ExampleViewController : UIViewController
         self.view.addSubview(conditions_label)
         self.view.addSubview(url_label)
         
-        let success = { [unowned self] (objects: [AnyObject]) in
-            self.data = objects as! [Weather]
+        let success = { [weak self] (objects: [AnyObject]) in
             
-            if let weather = self.data.first {
+            guard self != nil else { return }
+            
+            self!.data = objects as! [Weather]
+            
+            if let weather = self!.data.first {
                 conditions_label.text = weather.conditions
                 url_label.text = weather.icon_url
             }
         }
         
-        let failure = { [unowned conditions_label, unowned url_label] (error: Error?) in
+        let failure = { (error: Error?) in
             
             conditions_label.text = "Unable to fetch weather."
             url_label.isHidden = true
             
         }
         
-        apiController.getSFWeather(success: success, failure: failure)
+        task = apiController.getSFWeather(success: success, failure: failure)
     }
     
 }
