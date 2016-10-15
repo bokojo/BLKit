@@ -84,7 +84,7 @@ open class BLAPIController
     public init(host: String)
     {
         self.host = host;
-        self.reachability = Reachability(hostname: self.host)
+        self.reachability = Reachability()
         self.configureReachability()
     }
     
