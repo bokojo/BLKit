@@ -8,7 +8,7 @@
 
 import Foundation
 
-public protocol BLAPIModel : AnyObject {
+public protocol BLAPIModel {
     
-    init?(dictionary: NSDictionary)
+    init?(dictionary: [AnyHashable : Any])
 }

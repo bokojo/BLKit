@@ -11,7 +11,7 @@ import Foundation
 open class BLAPIController
 {
     public typealias parseFuncType =
-        (Data, APIParameters) throws -> [AnyObject]
+        (Data, APIParameters) throws -> [Any]
     
     public typealias completionFuncType =
         (Data?, URLResponse?, Error?) -> Void
@@ -21,7 +21,7 @@ open class BLAPIController
          public init(urlString: String,
               successNotification: Notification.Name? = nil,
               failureNotification: Notification.Name? = nil,
-              successClosure: (([AnyObject]) -> Void)? = nil,
+              successClosure: (([Any]) -> Void)? = nil,
               failureClosure: ((NSError?) -> Void)? = nil,
               type: BLAPIModel.Type? = nil,
               jsonKey: String? = nil,
@@ -49,7 +49,7 @@ open class BLAPIController
         public let urlString: String
         public let successNotification: Notification.Name?
         public let failureNotification: Notification.Name?
-        public let successClosure: (([AnyObject]) -> Void)?
+        public let successClosure: (([Any]) -> Void)?
         public let failureClosure: ((NSError?) -> Void)?
         public let type: BLAPIModel.Type?
         public let jsonKey: String?
@@ -244,7 +244,7 @@ open class BLAPIController
         }
     }
     
-    public final func defaultParseFunction() -> (Data, APIParameters) throws -> [AnyObject]
+    public final func defaultParseFunction() -> (Data, APIParameters) throws -> [Any]
     {
         return { (data, parameters) in
             
@@ -260,7 +260,7 @@ open class BLAPIController
                 
                 for key in keysArray
                 {
-                    if let d = (interior as! NSDictionary)[key]
+                    if let d = (interior as! [AnyHashable : Any])[key]
                     {
                         interior = d;
                     }
@@ -271,14 +271,14 @@ open class BLAPIController
                 }
             }
             
-            if interior is NSDictionary
+            if interior is [AnyHashable : Any]
             {
                 interior = [interior]
             }
             
-            let rawArray = interior as! [NSDictionary]
+            let rawArray = interior as! [ [AnyHashable : Any] ]
             
-            var objectArray = [AnyObject!]()
+            var objectArray = [Any!]()
             
             if let type = parameters.type
             {
@@ -306,7 +306,7 @@ open class BLAPIController
         {
             if let note = notification
             {
-                var userInfo : [String : AnyObject]?
+                var userInfo : [String : Any]?
                 if error != nil
                 {
                     userInfo = [BLAPIController.dictionaryKeys.error : error! as NSError]
@@ -326,8 +326,8 @@ open class BLAPIController
     }
     
     fileprivate func succeedWith(notification: Notification.Name?,
-                                 closure: (([AnyObject]) -> Void)?,
-                                 data: [AnyObject])
+                                 closure: (([Any]) -> Void)?,
+                                 data: [Any])
     {
         assert(notification != nil || closure != nil)
         
@@ -407,11 +407,11 @@ open class BLAPIController
 public extension Notification
 {
     
-    public func objectData() -> [AnyObject]?
+    public func objectData() -> [Any]?
     {
         if self.userInfo == nil
         {
-            return [AnyObject]()
+            return [Any]()
         }
         return self.userInfo![BLAPIController.dictionaryKeys.data] as? Array
     }

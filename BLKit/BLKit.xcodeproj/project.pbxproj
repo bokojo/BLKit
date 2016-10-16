@@ -8,13 +8,11 @@
 
 /* Begin PBXBuildFile section */
 		B4125C991CC553E20063F654 /* BLAPIController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4125C971CC553E20063F654 /* BLAPIController.swift */; };
-		B4125C9C1CC553EF0063F654 /* WundergroundAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4125C9B1CC553EF0063F654 /* WundergroundAPI.swift */; };
 		B4125CD61CC6B6C90063F654 /* Reachability.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4125CD51CC6B6C90063F654 /* Reachability.swift */; };
 		B439F92D1CC02DB3002F18F0 /* BLKit.h in Headers */ = {isa = PBXBuildFile; fileRef = B439F92C1CC02DB3002F18F0 /* BLKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B439F9341CC02DB3002F18F0 /* BLKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B439F9291CC02DB3002F18F0 /* BLKit.framework */; };
 		B439F9391CC02DB3002F18F0 /* BLKitTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B439F9381CC02DB3002F18F0 /* BLKitTests.swift */; };
 		B439F9491CC02E22002F18F0 /* BLAPIModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B439F9461CC02E22002F18F0 /* BLAPIModel.swift */; };
-		B48909321DABFE0E008AFA87 /* WundergroundAPITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B48909311DABFE0E008AFA87 /* WundergroundAPITests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -29,7 +27,6 @@
 
 /* Begin PBXFileReference section */
 		B4125C971CC553E20063F654 /* BLAPIController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BLAPIController.swift; sourceTree = "<group>"; };
-		B4125C9B1CC553EF0063F654 /* WundergroundAPI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WundergroundAPI.swift; sourceTree = "<group>"; };
 		B4125CD51CC6B6C90063F654 /* Reachability.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Reachability.swift; sourceTree = "<group>"; };
 		B439F9291CC02DB3002F18F0 /* BLKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = BLKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B439F92C1CC02DB3002F18F0 /* BLKit.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BLKit.h; sourceTree = "<group>"; };
@@ -38,7 +35,6 @@
 		B439F9381CC02DB3002F18F0 /* BLKitTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BLKitTests.swift; sourceTree = "<group>"; };
 		B439F93A1CC02DB3002F18F0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		B439F9461CC02E22002F18F0 /* BLAPIModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BLAPIModel.swift; sourceTree = "<group>"; };
-		B48909311DABFE0E008AFA87 /* WundergroundAPITests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WundergroundAPITests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -66,15 +62,6 @@
 				B4125C971CC553E20063F654 /* BLAPIController.swift */,
 			);
 			path = DataController;
-			sourceTree = "<group>";
-		};
-		B4125C9A1CC553EF0063F654 /* Examples */ = {
-			isa = PBXGroup;
-			children = (
-				B4125C9B1CC553EF0063F654 /* WundergroundAPI.swift */,
-				B48909311DABFE0E008AFA87 /* WundergroundAPITests.swift */,
-			);
-			path = Examples;
 			sourceTree = "<group>";
 		};
 		B4125CA11CC6A8930063F654 /* ThirdParty */ = {
@@ -116,7 +103,6 @@
 			isa = PBXGroup;
 			children = (
 				B4125CA11CC6A8930063F654 /* ThirdParty */,
-				B4125C9A1CC553EF0063F654 /* Examples */,
 				B439F9431CC02E22002F18F0 /* Controller */,
 				B439F9451CC02E22002F18F0 /* Model */,
 				B439F9471CC02E22002F18F0 /* View */,
@@ -282,7 +268,6 @@
 				B4125C991CC553E20063F654 /* BLAPIController.swift in Sources */,
 				B439F9491CC02E22002F18F0 /* BLAPIModel.swift in Sources */,
 				B4125CD61CC6B6C90063F654 /* Reachability.swift in Sources */,
-				B4125C9C1CC553EF0063F654 /* WundergroundAPI.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -290,7 +275,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B48909321DABFE0E008AFA87 /* WundergroundAPITests.swift in Sources */,
 				B439F9391CC02DB3002F18F0 /* BLKitTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
