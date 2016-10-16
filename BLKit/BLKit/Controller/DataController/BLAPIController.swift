@@ -16,19 +16,19 @@ open class BLAPIController
     public typealias completionFuncType =
         (Data?, URLResponse?, Error?) -> Void
 
-    public class APIParameters
+    public struct APIParameters
     {
          public init(urlString: String,
               successNotification: Notification.Name? = nil,
               failureNotification: Notification.Name? = nil,
               successClosure: (([Any]) -> Void)? = nil,
-              failureClosure: ((NSError?) -> Void)? = nil,
+              failureClosure: ((Error?) -> Void)? = nil,
               type: BLAPIModel.Type? = nil,
               jsonKey: String? = nil,
-              httpVerb: httpVerb? = nil,
-              inputObject: BLAPIModel? = nil,
-              cachePolicy: NSURLRequest.CachePolicy? = nil,
-              timeoutInterval: Double? = nil,
+              httpVerb: httpVerb = .GET,
+              uploadObject: BLAPIModelUploadable? = nil,
+              cachePolicy: NSURLRequest.CachePolicy = .useProtocolCachePolicy,
+              timeoutInterval: Double = 60.0,
               queueOnFailure: QueueBehavior = .NoQueueing)
         {
             
@@ -40,7 +40,7 @@ open class BLAPIController
             self.type = type
             self.jsonKey = jsonKey
             self.httpVerb = httpVerb
-            self.inputObject = inputObject
+            self.uploadObject = uploadObject
             self.cachePolicy = cachePolicy
             self.timeoutInterval = timeoutInterval
             self.queueOnFailure = queueOnFailure
@@ -50,13 +50,13 @@ open class BLAPIController
         public let successNotification: Notification.Name?
         public let failureNotification: Notification.Name?
         public let successClosure: (([Any]) -> Void)?
-        public let failureClosure: ((NSError?) -> Void)?
+        public let failureClosure: ((Error?) -> Void)?
         public let type: BLAPIModel.Type?
         public let jsonKey: String?
-        public let httpVerb: httpVerb?
-        public let inputObject: BLAPIModel?
-        public let cachePolicy: NSURLRequest.CachePolicy?
-        public let timeoutInterval: Double?
+        public let httpVerb: httpVerb
+        public let uploadObject: BLAPIModelUploadable?
+        public let cachePolicy: NSURLRequest.CachePolicy
+        public let timeoutInterval: Double
         public let queueOnFailure: QueueBehavior
         
         public enum QueueBehavior: Int
@@ -68,10 +68,6 @@ open class BLAPIController
             
         }
     }
-    
-    public let defaultCachePolicy = NSURLRequest.CachePolicy.useProtocolCachePolicy
-    
-    public let defaultTimeoutInterval = 60.0
     
     public let host: String
     
@@ -120,13 +116,13 @@ open class BLAPIController
         static let domain = "APIController"
     }
     
-    public func serverInteractionBy(parameters: APIParameters) -> URLSessionDataTask?
+    public func serverInteractionBy(parameters: APIParameters) -> URLSessionTask?
     {
         return self.serverInteractionBy(parameters: parameters, parseFunction: self.defaultParseFunction())
     }
     
     public func serverInteractionBy(parameters: APIParameters,
-                                    parseFunction: @escaping parseFuncType) -> URLSessionDataTask?
+                                    parseFunction: @escaping parseFuncType) -> URLSessionTask?
     {
         guard let url = URL(string:parameters.urlString) else
         {
@@ -136,17 +132,25 @@ open class BLAPIController
         
         var request = URLRequest(
             url: url,
-            cachePolicy: parameters.cachePolicy ?? self.defaultCachePolicy,
-            timeoutInterval: parameters.timeoutInterval ?? self.defaultTimeoutInterval)
+            cachePolicy: parameters.cachePolicy,
+            timeoutInterval: parameters.timeoutInterval)
         
-        request.httpMethod = parameters.httpVerb?.rawValue ?? httpVerb.GET.rawValue
+        request.httpMethod = parameters.httpVerb.rawValue
         
         let completionFunc = self.completionHandler(
             parameters: parameters,
             parseFunction: parseFunction)
         
-        let task = self.urlSession.dataTask(with: request, completionHandler: completionFunc)
-        
+        var task: URLSessionTask
+        switch (parameters.httpVerb)
+        {
+            case .GET:
+                fallthrough
+            case .DELETE:
+                task = self.urlSession.dataTask(with: request, completionHandler: completionFunc)
+            default:   // POST, PUT, PATCH
+                task = self.urlSession.uploadTask(with: request, from: parameters.uploadObject?.postData, completionHandler: completionFunc)
+        }
         if let reach = self.reachability
         {
             if reach.isReachable == false
@@ -294,8 +298,8 @@ open class BLAPIController
     }
 
     fileprivate func failWith(notification: Notification.Name?,
-                              closure: ((NSError?) -> Void)?,
-                              error: NSError?)
+                              closure: ((Error?) -> Void)?,
+                              error: Error?)
     {
         if notification == nil && closure == nil
         {
@@ -372,7 +376,7 @@ open class BLAPIController
         }
     }
     
-    public func addTaskToQueue(task: URLSessionDataTask, parameters: APIParameters)
+    public func addTaskToQueue(task: URLSessionTask, parameters: APIParameters)
     {
         switch parameters.queueOnFailure
         {
@@ -402,23 +406,21 @@ open class BLAPIController
         }
     }
 }
-    
 
 public extension Notification
 {
-    
     public func objectData() -> [Any]?
     {
         if self.userInfo == nil
         {
             return [Any]()
         }
-        return self.userInfo![BLAPIController.dictionaryKeys.data] as? Array
+        return self.userInfo![BLAPIController.dictionaryKeys.data] as? Array ?? [Any]()
     }
     
-    public func errorData() -> NSError?
+    public func errorData() -> Error?
     {
-        return self.userInfo?[BLAPIController.dictionaryKeys.error] as? NSError
+        return self.userInfo?[BLAPIController.dictionaryKeys.error] as! Error?
     }
 }
 
