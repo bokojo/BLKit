@@ -12,3 +12,8 @@ public protocol BLAPIModel {
     
     init?(dictionary: [AnyHashable : Any])
 }
+
+public protocol BLAPIModelUploadable: BLAPIModel {
+    
+    var postData: Data? { get }
+}
