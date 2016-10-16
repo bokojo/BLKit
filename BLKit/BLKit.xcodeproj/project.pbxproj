@@ -14,6 +14,7 @@
 		B439F9341CC02DB3002F18F0 /* BLKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B439F9291CC02DB3002F18F0 /* BLKit.framework */; };
 		B439F9391CC02DB3002F18F0 /* BLKitTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B439F9381CC02DB3002F18F0 /* BLKitTests.swift */; };
 		B439F9491CC02E22002F18F0 /* BLAPIModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B439F9461CC02E22002F18F0 /* BLAPIModel.swift */; };
+		B46F10EC1DB2FE6300B5FC23 /* BLViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B46F10EB1DB2FE6300B5FC23 /* BLViewController.swift */; };
 		B48909321DABFE0E008AFA87 /* WundergroundAPITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B48909311DABFE0E008AFA87 /* WundergroundAPITests.swift */; };
 /* End PBXBuildFile section */
 
@@ -38,6 +39,7 @@
 		B439F9381CC02DB3002F18F0 /* BLKitTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BLKitTests.swift; sourceTree = "<group>"; };
 		B439F93A1CC02DB3002F18F0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		B439F9461CC02E22002F18F0 /* BLAPIModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BLAPIModel.swift; sourceTree = "<group>"; };
+		B46F10EB1DB2FE6300B5FC23 /* BLViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BLViewController.swift; sourceTree = "<group>"; };
 		B48909311DABFE0E008AFA87 /* WundergroundAPITests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WundergroundAPITests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -138,7 +140,7 @@
 		B439F9431CC02E22002F18F0 /* Controller */ = {
 			isa = PBXGroup;
 			children = (
-				B46F10E11DB2BA9000B5FC23 /* ViewController */,
+				B46F10EA1DB2FE4B00B5FC23 /* ViewConroller */,
 				B4125C961CC553E20063F654 /* DataController */,
 			);
 			path = Controller;
@@ -159,11 +161,12 @@
 			path = View;
 			sourceTree = "<group>";
 		};
-		B46F10E11DB2BA9000B5FC23 /* ViewController */ = {
+		B46F10EA1DB2FE4B00B5FC23 /* ViewConroller */ = {
 			isa = PBXGroup;
 			children = (
+				B46F10EB1DB2FE6300B5FC23 /* BLViewController.swift */,
 			);
-			path = ViewController;
+			path = ViewConroller;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -279,6 +282,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B46F10EC1DB2FE6300B5FC23 /* BLViewController.swift in Sources */,
 				B4125C991CC553E20063F654 /* BLAPIController.swift in Sources */,
 				B439F9491CC02E22002F18F0 /* BLAPIModel.swift in Sources */,
 				B4125CD61CC6B6C90063F654 /* Reachability.swift in Sources */,
