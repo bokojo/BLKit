@@ -113,6 +113,7 @@ open class BLAPIController
         case BadJSONKey = 101
         case UnreachableServer
         case EmptyDataSet
+        case BadHTTPStatus
         static let domain = "APIController"
     }
     
@@ -190,59 +191,75 @@ open class BLAPIController
     {
         return { (data, response, error) in
             
-            DispatchQueue.global(qos: DispatchQoS.QoSClass.background).async
+            // Basic connectivity
+            if error != nil
             {
-                if error != nil
-                {
-                    self.failWith(
-                        notification: parameters.failureNotification,
-                        closure:parameters.failureClosure,
-                        error: (error as! NSError))
-                        
-                }
-                else if data == nil
+                self.failWith(
+                    notification: parameters.failureNotification,
+                    closure:parameters.failureClosure,
+                    error: (error as! NSError))
+                
+            }
+              
+            if response != nil && response! is HTTPURLResponse
+            {
+                let hresponse = response as! HTTPURLResponse
+                let value: Int = hresponse.statusCode as Int / 100
+                if value >= 4
                 {
                     self.failWith(
                         notification: parameters.failureNotification,
                         closure: parameters.failureClosure,
                         error: NSError(
                             domain: APIControllerErrors.domain,
-                            code: APIControllerErrors.EmptyDataSet.rawValue,
+                            code: APIControllerErrors.BadHTTPStatus.rawValue,
                             userInfo:
-                                [NSLocalizedDescriptionKey :
-                                    "No Data Returned at NSURLSession"]))
+                            [NSLocalizedDescriptionKey : "Bad HTTP Status returned: \(hresponse.statusCode)\nURL: \(hresponse.url)", "response" : hresponse]))
                 }
-                else
+            }
+                
+            else if data == nil
+            {
+                self.failWith(
+                    notification: parameters.failureNotification,
+                    closure: parameters.failureClosure,
+                    error: NSError(
+                        domain: APIControllerErrors.domain,
+                        code: APIControllerErrors.EmptyDataSet.rawValue,
+                        userInfo:
+                        [NSLocalizedDescriptionKey :
+                            "No Data Returned at NSURLSession"]))
+            }
+            else
+            {
+                do
                 {
-                    do
-                    {
-                        let models = try parseFunction(data!, parameters)
-                        self.succeedWith(
-                            notification: parameters.successNotification,
-                            closure: parameters.successClosure, data: models)
-                    }
-                    catch APIControllerErrors.BadJSONKey
-                    {
-                        self.failWith(
-                            notification: parameters.failureNotification,
-                            closure: parameters.failureClosure,
-                            error: NSError(
-                                domain: APIControllerErrors.domain,
-                                code: APIControllerErrors.BadJSONKey.rawValue,
-                                userInfo:
-                                    [NSLocalizedDescriptionKey :
-                                        "Bad JSON path key: \(parameters.jsonKey)",
-                                    BLAPIController.dictionaryKeys.json :
-                                        parameters.jsonKey!]))
-                            
-                    }
-                    catch
-                    {
-                        self.failWith(
-                            notification: parameters.failureNotification,
-                            closure: parameters.failureClosure,
-                            error:nil)
-                    }
+                    let models = try parseFunction(data!, parameters)
+                    self.succeedWith(
+                        notification: parameters.successNotification,
+                        closure: parameters.successClosure, data: models)
+                }
+                catch APIControllerErrors.BadJSONKey
+                {
+                    self.failWith(
+                        notification: parameters.failureNotification,
+                        closure: parameters.failureClosure,
+                        error: NSError(
+                            domain: APIControllerErrors.domain,
+                            code: APIControllerErrors.BadJSONKey.rawValue,
+                            userInfo:
+                            [NSLocalizedDescriptionKey :
+                                "Bad JSON path key: \(parameters.jsonKey)",
+                                BLAPIController.dictionaryKeys.json :
+                                    parameters.jsonKey!]))
+                    
+                }
+                catch
+                {
+                    self.failWith(
+                        notification: parameters.failureNotification,
+                        closure: parameters.failureClosure,
+                        error:nil)
                 }
             }
         }
